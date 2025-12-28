@@ -1,7 +1,12 @@
 ---
-layout: page
-title: SciAgent
+layout: default
+title: Home
+nav_order: 1
+description: "SciAgent - AI-powered agent for scientific computing and engineering workflows"
+permalink: /
 ---
+
+# SciAgent
 
 Welcome to **SciAgent** documentation.
 
@@ -18,4 +23,3 @@ It executes multi-step tasks, tracks progress, and supports resumable runs.
 
 - [Advanced Configuration](advanced.md)
 - [Internal APIs & Architecture](internals.md)
-
