@@ -3,6 +3,13 @@ layout: page
 title: SciAgent
 ---
 
-# SciAgent
+Welcome. Get started with the Quickstart, explore Advanced features, or dive into Internals.
 
-Welcome. Get started with the [Quickstart](quickstart.md), explore [Advanced](advanced.md) features, or dive into [Internals](internals.md).
+## Start here
+- [Quick Start](/quick-start)
+- [Usage](/usage)
+
+## Go deeper
+- [Advanced Configuration](/advanced-configuration)
+- [Internal APIs & Architecture](/internals)
+
