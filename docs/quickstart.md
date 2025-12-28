@@ -1,6 +1,7 @@
 ---
-layout: page
+layout: default
 title: Quick Start
+nav_order: 2
 ---
 
 # SCI Agent – Quick Start Guide
