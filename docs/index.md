@@ -5,4 +5,4 @@ title: SciAgent
 
 # SciAgent
 
-Welcome. See the [Usage](usage.md).
+Welcome. Get started with the [Quickstart](quickstart.md), explore [Advanced](advanced.md) features, or dive into [Internals](internals.md).
