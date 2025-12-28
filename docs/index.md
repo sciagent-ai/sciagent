@@ -7,7 +7,6 @@ Welcome. Get started with the Quickstart, explore Advanced features, or dive int
 
 ## Start here
 - [Quick Start](/quick-start)
-- [Usage](/usage)
 
 ## Go deeper
 - [Advanced Configuration](/advanced-configuration)
