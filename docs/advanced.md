@@ -2,7 +2,6 @@
 theme: jekyll-theme-minimal
 layout: page
 title: Advanced Configuration
-permalink: /advanced-configuration/
 ---
 
 # SCI Agent – Advanced Configuration
