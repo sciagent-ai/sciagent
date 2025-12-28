@@ -1,6 +1,7 @@
 ---
-layout: page
+layout: default
 title: Internal APIs & Architecture
+nav_order: 4
 ---
 
 # SCI Agent – Internal APIs & Architecture
