@@ -1,6 +1,6 @@
 title: SciAgent
 description: Documentation for SciAgent
-theme: minima
+theme: jekyll-theme-minimal
 
 # Important for https://sciagent-ai.github.io/sciagent/
 url: "https://sciagent-ai.github.io"
