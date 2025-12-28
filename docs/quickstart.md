@@ -2,7 +2,6 @@
 theme: jekyll-theme-minimal
 layout: page
 title: Quick Start
-permalink: /quick-start/
 ---
 
 # SCI Agent – Quick Start Guide
