@@ -1,0 +1,31 @@
+name: literature_search
+description: "Scientific literature search, analysis, and synthesis capabilities"
+version: "1.0.0"
+domain: scientific
+horizontal: true
+triggers:
+  - "literature"
+  - "papers"
+  - "research"
+  - "articles"
+  - "citations"
+  - "review"
+  - "survey"
+  - "bibliography"
+  - "sources"
+  - "studies"
+  - "publications"
+allowed_tools:
+  - "web_search"
+  - "web_fetch"
+  - "str_replace_editor"
+  - "create_summary"
+  - "bash"
+tags:
+  - "research"
+  - "literature"
+  - "analysis"
+dependencies: []
+consensus:
+  enabled: false
+  n_models: 1

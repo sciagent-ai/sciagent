@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latest News App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-container {
+            background-color: #f4f4f4;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        .tab.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Latest News</h1>
+    
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('headlines')">Top Headlines</div>
+        <div class="tab" onclick="switchTab('search')">Search News</div>
+    </div>
+    
+    <div id="headlines-tab" class="tab-content active">
+        <div class="form-container">
+            <form action="/news" method="get">
+                <div class="form-group">
+                    <label for="country">Country:</label>
+                    <select id="country" name="country">
+                        <option value="us">United States</option>
+                        <option value="gb">United Kingdom</option>
+                        <option value="ca">Canada</option>
+                        <option value="au">Australia</option>
+                        <option value="in">India</option>
+                        <option value="fr">France</option>
+                        <option value="de">Germany</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category:</label>
+                    <select id="category" name="category">
+                        <option value="general">General</option>
+                        <option value="business">Business</option>
+                        <option value="technology">Technology</option>
+                        <option value="sports">Sports</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="health">Health</option>
+                        <option value="science">Science</option>
+                    </select>
+                </div>
+                
+                <button type="submit">Get Headlines</button>
+            </form>
+        </div>
+        
+        <p>Select a country and news category to get the latest headlines.</p>
+    </div>
+    
+    <div id="search-tab" class="tab-content">
+        <div class="form-container">
+            <form action="/news" method="get">
+                <div class="form-group">
+                    <label for="search">Search News:</label>
+                    <input type="text" id="search" name="q" placeholder="Enter keywords to search..." required>
+                </div>
+                
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        
+        <p>Enter keywords to search for specific news articles.</p>
+    </div>
+    
+    <p><small>Powered by NewsAPI.org. Note: You'll need to provide a NewsAPI key for real data.</small></p>
+    
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Deactivate all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Activate the selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Activate the clicked tab button
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

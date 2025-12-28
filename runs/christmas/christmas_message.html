@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎄 Merry Christmas! 🎄</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Snowflakes animation */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            animation: fall linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh);
+            }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 600px;
+            animation: fadeIn 1s ease-in;
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            color: #c41e3a;
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .tree {
+            font-size: 2em;
+            margin: 30px 0;
+            line-height: 1.2;
+        }
+
+        .message {
+            color: #2c5f2d;
+            font-size: 1.3em;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+
+        .decorative-line {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #c41e3a, transparent);
+            margin: 20px 0;
+        }
+
+        .emoji-row {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+
+        .date-time {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #c41e3a, #e74c3c);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(196, 30, 58, 0.4);
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(196, 30, 58, 0.6);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .extra-message {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            border-radius: 10px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .lights {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .light {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        .light:nth-child(1) { background: #ff0000; animation-delay: 0s; }
+        .light:nth-child(2) { background: #00ff00; animation-delay: 0.2s; }
+        .light:nth-child(3) { background: #0000ff; animation-delay: 0.4s; }
+        .light:nth-child(4) { background: #ffff00; animation-delay: 0.6s; }
+        .light:nth-child(5) { background: #ff00ff; animation-delay: 0.8s; }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="lights">
+            <div class="light"></div>
+            <div class="light"></div>
+            <div class="light"></div>
+            <div class="light"></div>
+            <div class="light"></div>
+        </div>
+
+        <h1>🎄 Merry Christmas! 🎄</h1>
+        
+        <hr class="decorative-line">
+        
+        <div class="tree">
+            ⭐<br>
+            🎄🎄🎄<br>
+            🎄🎄🎄🎄🎄<br>
+            🎄🎄🎄🎄🎄🎄🎄<br>
+            🎄🎄🎄🎄🎄🎄🎄🎄🎄<br>
+            |||
+        </div>
+        
+        <div class="message">
+            <p>May your days be merry and bright,</p>
+            <p>And may all your Christmases be white! ❄️</p>
+            <br>
+            <p>Wishing you joy, peace, and happiness</p>
+            <p>this holiday season! 🎁</p>
+        </div>
+        
+        <div class="emoji-row">
+            🎅 🤶 🎁 ⛄ 🔔 🕯️
+        </div>
+        
+        <hr class="decorative-line">
+        
+        <div class="date-time" id="datetime"></div>
+        
+        <button class="button" onclick="showExtraCheer()">
+            Spread More Cheer! ✨
+        </button>
+        
+        <div id="extraMessage" class="extra-message hidden">
+            <h2>🎵 Ho Ho Ho! 🎵</h2>
+            <p>Santa's workshop wishes you all the best!</p>
+            <p>May your heart be filled with the magic of Christmas! 🌟</p>
+            <div style="margin-top: 15px;">
+                🎵 Deck the halls with boughs of holly! 🎵<br>
+                🔔 Fa la la la la, la la la la! 🔔
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('datetime').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        // Show extra message
+        function showExtraCheer() {
+            const extraMsg = document.getElementById('extraMessage');
+            extraMsg.classList.remove('hidden');
+        }
+
+        // Create snowflakes
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.classList.add('snowflake');
+            snowflake.innerHTML = '❄';
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            snowflake.style.opacity = Math.random();
+            snowflake.style.fontSize = Math.random() * 10 + 10 + 'px';
+            
+            document.body.appendChild(snowflake);
+            
+            setTimeout(() => {
+                snowflake.remove();
+            }, 5000);
+        }
+
+        // Initialize
+        updateDateTime();
+        setInterval(updateDateTime, 60000); // Update every minute
+        
+        // Create snowflakes periodically
+        setInterval(createSnowflake, 300);
+    </script>
+</body>
+</html>

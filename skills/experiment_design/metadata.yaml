@@ -1,0 +1,39 @@
+name: experiment_design
+description: "Scientific experiment design including DOE, Bayesian optimization, and statistical analysis"
+version: "1.0.0"
+domain: scientific
+horizontal: true
+triggers:
+  - "experiment"
+  - "design"
+  - "optimization"
+  - "bayesian"
+  - "statistical"
+  - "analysis"
+  - "hypothesis"
+  - "parameters"
+  - "factors"
+  - "response"
+  - "doe"
+  - "simulate"
+  - "optimize"
+allowed_tools:
+  - "str_replace_editor"
+  - "bash"
+  - "notebook_edit"
+  - "create_summary"
+  - "web_search"
+  - "web_fetch"
+tags:
+  - "science"
+  - "experimentation"
+  - "optimization"
+  - "statistics"
+dependencies:
+  - "numpy"
+  - "scipy"
+  - "matplotlib"
+consensus:
+  enabled: true
+  n_models: 2
+  judge_model: "claude-3-5-sonnet-20241022"

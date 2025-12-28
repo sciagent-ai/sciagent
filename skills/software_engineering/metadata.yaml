@@ -1,0 +1,41 @@
+name: software_engineering
+description: "Core software engineering capabilities including code editing, testing, debugging, and project management"
+version: "1.0.0"
+domain: software_engineering
+horizontal: false
+triggers:
+  - "code"
+  - "program" 
+  - "debug"
+  - "test"
+  - "fix"
+  - "implement"
+  - "refactor"
+  - "build"
+  - "compile"
+  - "function"
+  - "class"
+  - "method"
+  - "variable"
+  - "bug"
+  - "error"
+  - "syntax"
+  - "import"
+  - "package"
+  - "library"
+allowed_tools:
+  - "str_replace_editor"
+  - "bash"
+  - "glob_search"
+  - "grep_search" 
+  - "list_directory"
+  - "create_summary"
+  - "todo_write"
+tags:
+  - "coding"
+  - "development"
+  - "engineering"
+dependencies: []
+consensus:
+  enabled: false
+  n_models: 1
