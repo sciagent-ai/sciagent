@@ -2,15 +2,6 @@ title: SciAgent
 description: Documentation for SciAgent
 theme: jekyll-theme-minimal
 
-# Important for https://sciagent-ai.github.io/sciagent/
 url: "https://sciagent-ai.github.io"
 baseurl: "/sciagent"
-
-# Top navigation for jekyll-theme-minimal
-header_pages:
-  - index.md
-  - quickstart.md
-  - advanced.md
-  - internals.md
-
 
