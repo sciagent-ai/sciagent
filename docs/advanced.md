@@ -1,6 +1,7 @@
 ---
-layout: page
+layout: default
 title: Advanced Configuration
+nav_order: 3
 ---
 
 # SCI Agent – Advanced Configuration
