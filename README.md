@@ -298,13 +298,12 @@ python -m sciagent --debug "Your task here"
 MIT License
 
 ## Acknowledgments
-Build with major contributions from:
-- Claude Code, GPT-5, Kiro
+Built by human with major contributions from:
+- Claude Code, GPT-5, Kiro, Grok
 
 Built on top of:
 - [LiteLLM](https://github.com/BerriAI/litellm) for multi-provider LLM support
 - [DuckDuckGo Search](https://github.com/deedy5/duckduckgo_search) for web search capabilities
-- Original SCI Agent architecture
 
 ---
 
