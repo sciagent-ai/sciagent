@@ -52,18 +52,17 @@ export AZURE_API_BASE="https://<your-resource>.openai.azure.com"
 
 Run a simple task:
 ```bash
-cd multi_llm_swe_agent_dyamic_registry
-python -m sciagent.main "Create a simple Python calculator script"
+python -m sciagent "Create a simple Python calculator script"
 ```
 
 Use a specific model:
 ```bash
-python -m sciagent.main --model gpt-4o-mini "Analyze this codebase and create documentation"
+python -m sciagent --model gpt-4o-mini "Analyze this codebase and create documentation"
 ```
 
 Use model fallback chain:
 ```bash
-python -m sciagent.main \
+python -m sciagent \
   --model claude-3-5-sonnet-20241022 \
   --models gpt-4o-mini,mistral/mistral-large-latest \
   "Refactor this code for better performance"
@@ -84,6 +83,7 @@ python -m sciagent.main \
 | `--no-progress` | Disable progress.md tracking | `False` |
 | `--no-web` | Disable web tools | `False` |
 | `--no-notebooks` | Disable notebook tools | `False` |
+| `--no-skills` | Disable skill system for maximum speed | `False` |
 | `--reasoning-effort` | Reasoning effort level (none/low/medium/high) | `medium` |
 | `--temperature` | Model temperature (0.0-1.0) | `0.1` |
 
@@ -122,7 +122,7 @@ And many more via [LiteLLM](https://docs.litellm.ai/docs/providers)!
 ## Architecture
 
 ```
-swe_agent_litellm/
+sciagent/
 ├── main.py              # CLI entry point
 ├── config.py            # Configuration management
 ├── agent.py             # Core agent implementation
@@ -152,28 +152,28 @@ The agent comes with a comprehensive set of tools:
 
 ### Code Analysis
 ```bash
-python -m sciagent.main \
+python -m sciagent \
   --working-dir /path/to/project \
   "Analyze this codebase and identify potential security vulnerabilities"
 ```
 
 ### Feature Development
 ```bash
-python -m sciagent.main \
+python -m sciagent \
   --max-iterations 100 \
   "Add authentication system to this Flask app with JWT tokens"
 ```
 
 ### Documentation Generation  
 ```bash
-python -m sciagent.main \
+python -m sciagent \
   --no-web \
   "Generate comprehensive API documentation for all Python modules"
 ```
 
 ### Bug Fixing
 ```bash
-python -m sciagent.main \
+python -m sciagent \
   --resume task_123 \
   "Continue debugging the database connection issues"
 ```
@@ -202,7 +202,7 @@ The agent automatically generates `progress.md` files that include:
 Long-running tasks can be paused and resumed:
 
 1. Tasks are automatically assigned unique IDs
-2. State is persisted in `.swe_agent_professional_state.pkl`
+2. State is persisted automatically
 3. Resume with `--resume <task_id>`
 4. Progress is maintained across sessions
 
@@ -252,14 +252,14 @@ class MyCustomTool(BaseTool):
 Test with different models:
 ```bash
 # Quick smoke tests
-python -m sciagent.main --max-iterations 1 --model gpt-4o-mini "Say hello"
-python -m sciagent.main --max-iterations 1 --model claude-3-5-sonnet-20241022 "Say hello"
+python -m sciagent --max-iterations 1 --model gpt-4o-mini "Say hello"
+python -m sciagent --max-iterations 1 --model claude-3-5-sonnet-20241022 "Say hello"
 ```
 
 Enable debug logging:
 ```bash
 export LITELLM_LOG=DEBUG
-python -m sciagent.main --debug "Your task here"
+python -m sciagent --debug "Your task here"
 ```
 
 ## Troubleshooting
@@ -277,7 +277,7 @@ python -m sciagent.main --debug "Your task here"
 - Try a different model as fallback
 
 **"Task won't resume"**
-- Check if `.swe_agent_professional_state.pkl` exists in working directory
+- Check if state file exists in working directory
 - Ensure task ID is correct
 - Try starting fresh if state file is corrupted
 
