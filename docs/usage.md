@@ -1,7 +1,7 @@
 ---
-theme: jekyll-theme-minimal
-layout: page
+layout: default
 title: Usage
+nav_order: 5
 ---
 # SCI Agent - Comprehensive Usage Guide
 
