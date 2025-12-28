@@ -1,4 +1,8 @@
 theme: jekyll-theme-minimal
+---
+layout: page
+title: Usage
+---
 # SCI Agent - Comprehensive Usage Guide
 
 A complete AI-powered scientific computing and engineering agent with multi-LLM support, advanced reasoning capabilities, and comprehensive toolset for complex technical tasks.
