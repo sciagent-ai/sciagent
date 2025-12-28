@@ -2,7 +2,6 @@
 theme: jekyll-theme-minimal
 layout: page
 title: Internal APIs & Architecture
-permalink: /internals/
 ---
 
 # SCI Agent – Internal APIs & Architecture
