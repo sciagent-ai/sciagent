@@ -46,6 +46,9 @@ export XAI_API_KEY=xai-...
 # Azure OpenAI
 export AZURE_API_KEY=...
 export AZURE_API_BASE="https://<your-resource>.openai.azure.com"
+
+# Brave Search (optional, for enhanced web search)
+export BRAVE_SEARCH_API_KEY=BSA-...
 ```
 
 ### Basic Usage

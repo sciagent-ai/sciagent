@@ -325,6 +325,15 @@ class SCIAgent(CoreAgent):
                             
                             tool_name: str = call["function"]["name"]
                             tool_args_str: str = call["function"].get("arguments", "{}")
+                            
+                            # Extract tool call ID FIRST (before any potential skips)
+                            tool_id: Optional[str] = None
+                            tool_id = call.get("id")
+                            if not tool_id and hasattr(call, 'id'):
+                                tool_id = getattr(call, 'id', None)
+                            if not tool_id:
+                                tool_id = f"fallback_{self.state.iteration_count}_{len(messages)}"
+                            
                             # Parse arguments JSON string; fall back to empty dict on error
                             try:
                                 tool_input: Dict[str, Any] = json.loads(tool_args_str) or {}
@@ -332,23 +341,18 @@ class SCIAgent(CoreAgent):
                                 print(f"⚠️ Failed to parse tool arguments for {tool_name}: {e}")
                                 tool_input = {}
                             
-                            # Skip malformed bash calls
+                            # Handle malformed bash calls with proper error result
                             if tool_name == "bash" and "command" not in tool_input:
-                                print(f"⚠️ Skipping malformed bash call with no command parameter")
+                                print(f"⚠️ Malformed bash call - missing 'command' parameter")
+                                messages.append({
+                                    "role": "tool",
+                                    "name": tool_name,
+                                    "content": "Error: Missing required 'command' parameter",
+                                    "tool_call_id": tool_id,
+                                })
                                 continue
                             
-                            # Extract tool call ID with multiple fallback strategies for cross-provider compatibility
-                            # Different providers use different formats:
-                            # - OpenAI: call.id or call["id"]
-                            # - Anthropic: call.id (in toolu_* format)
-                            # - Gemini/Groq: OpenAI-compatible format
-                            tool_id: Optional[str] = None
-                            
-                            # Strategy 1: Direct access to id field
-                            tool_id = call.get("id")
-                            if not tool_id and hasattr(call, 'id'):
-                                tool_id = getattr(call, 'id', None)
-                                
+                            # Additional fallback strategies for cross-provider compatibility
                             # Strategy 2: Check if it's nested somewhere else
                             if not tool_id and isinstance(call, dict):
                                 # Some providers might nest it differently

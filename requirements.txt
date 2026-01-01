@@ -4,6 +4,8 @@ requests>=2.31.0
 
 # Web search capabilities  
 duckduckgo-search>=3.8.0
+beautifulsoup4>=4.9.0
+html2text>=2020.1.16
 
 # Data handling and utilities
 pathlib>=1.0.1
