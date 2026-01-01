@@ -64,13 +64,11 @@ class CoreAgent(ABC):
         # Configure LiteLLM for cross-provider compatibility
         if config.debug_mode:
             try:
-                # Enable verbose logging for debugging tool call issues across providers
-                litellm.set_verbose = True
-                # Turn on debug mode for detailed error reporting
-                litellm._turn_on_debug()
-                print("🔍 LiteLLM debug mode enabled for cross-provider tool calling")
+                # Disable noisy LiteLLM logging but keep sciagent debug info
+                litellm.set_verbose = False
+                print("🔍 Sciagent debug mode enabled (LiteLLM verbose disabled)")
             except Exception as e:
-                print(f"⚠️ Could not enable LiteLLM debug mode: {e}")
+                print(f"⚠️ Could not configure LiteLLM: {e}")
         
         # Initialize performance monitor if enabled
         self.performance_monitor = None

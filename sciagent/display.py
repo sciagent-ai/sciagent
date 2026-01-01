@@ -348,8 +348,8 @@ class AgentDisplay:
             length = result.get("content_length", 0)
             return f"Fetched content ({length} characters)"
         elif tool_name == "todo_write":
-            total = result.get("total_todos", 0)
-            return f"Updated {total} todo{'s' if total != 1 else ''}"
+            # Return the formatted output directly instead of summary
+            return result.get("output", f"Updated {result.get('total_todos', 0)} todos")
         elif tool_name == "task_agent":
             return "Sub-agent completed task"
         elif tool_name == "multi_edit":

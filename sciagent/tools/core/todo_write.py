@@ -55,7 +55,10 @@ class TodoWriteTool(BaseTool):
                 if todo.get("status") in status_counts:
                     status_counts[todo["status"]] += 1
             summary_line = f"Summary: {status_counts['completed']} completed, {status_counts['in_progress']} in progress, {status_counts['pending']} pending"
-            output = "\n".join(lines + ["", summary_line])
+            
+            # Add header to make todo lists more visible
+            header = "📋 Task List:"
+            output = "\n".join([header, ""] + lines + ["", summary_line])
             return {
                 "success": True,
                 "output": output,

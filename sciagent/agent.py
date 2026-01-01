@@ -332,6 +332,11 @@ class SCIAgent(CoreAgent):
                                 print(f"⚠️ Failed to parse tool arguments for {tool_name}: {e}")
                                 tool_input = {}
                             
+                            # Skip malformed bash calls
+                            if tool_name == "bash" and "command" not in tool_input:
+                                print(f"⚠️ Skipping malformed bash call with no command parameter")
+                                continue
+                            
                             # Extract tool call ID with multiple fallback strategies for cross-provider compatibility
                             # Different providers use different formats:
                             # - OpenAI: call.id or call["id"]
@@ -643,6 +648,7 @@ class SCIAgent(CoreAgent):
         recent_tools = [t[0] for t in self.state.last_tool_executions[-self.config.max_consecutive_same_tool:]]
         if len(recent_tools) >= self.config.max_consecutive_same_tool and all(t == tool_name for t in recent_tools):
             print(f"⚠️  Warning: {tool_name} executed {self.config.max_consecutive_same_tool} times consecutively")
+            print(f"🤔 Reached consecutive tool execution limit. Proceeding with current results and may ask for user guidance.")
             return False
         
         # Check total executions per iteration  
@@ -650,6 +656,7 @@ class SCIAgent(CoreAgent):
                                  if t[0] != "todo_write"]  # Exclude todo_write from limits
         if len(current_iteration_tools) >= self.config.max_tool_executions_per_iteration:
             print(f"⚠️  Warning: Maximum tool executions per iteration reached ({self.config.max_tool_executions_per_iteration})")
+            print(f"🤔 Reached iteration tool execution limit. Proceeding with current results and may ask for user guidance.")
             return False
         
         return True

@@ -96,7 +96,7 @@ class Config:
     working_dir: str = "."
     max_iterations: int = 25
     max_tool_executions_per_iteration: int = 15
-    max_consecutive_same_tool: int = 5
+    max_consecutive_same_tool: int = 15
     debug_mode: bool = False
     verbosity: str = "standard"
     state_file: str = ".sci_agent_state.pkl"

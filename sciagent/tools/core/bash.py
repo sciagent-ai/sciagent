@@ -38,7 +38,21 @@ class BashTool(BaseTool):
     }
 
     def run(self, tool_input: Dict[str, Any], agent: Optional[Any] = None) -> Dict[str, Any]:
+        # Validate required command parameter
+        if not tool_input or "command" not in tool_input:
+            return {
+                "success": False,
+                "error": "Missing required 'command' parameter in bash tool input",
+                "provided_input": str(tool_input)
+            }
+        
         command = tool_input.get("command", "")
+        if not command.strip():
+            return {
+                "success": False,
+                "error": "Empty command provided to bash tool"
+            }
+        
         timeout = tool_input.get("timeout", 30)
         # Adjust timeout heuristically for long-running commands
         cmd_lower = command.lower()
