@@ -1,0 +1,63 @@
+name: evidence_synthesis
+description: |
+  Cross-domain scientific evidence gathering, synthesis, and analysis.
+  Detects research domain, searches multiple sources, identifies contradictions,
+  quantifies uncertainty, and generates testable hypotheses with experimental designs.
+
+version: "1.0.0"
+domain: scientific
+horizontal: true
+
+triggers:
+  - research
+  - literature
+  - papers
+  - studies
+  - evidence
+  - synthesis
+  - hypothesis
+  - experimental design
+  - predict
+  - forecast
+  - analyze data
+  - scientific
+  - pubmed
+  - arxiv
+  - compare studies
+  - meta-analysis
+  - systematic review
+  - contradiction
+  - uncertainty
+  - confidence interval
+  - state of the art
+  - current research
+  - recent findings
+
+allowed_tools:
+  - web_search
+  - web_fetch
+  - bash
+  - str_replace_editor
+  - notebook_edit
+  - glob_search
+  - grep_search
+  - task_agent
+  - todo_write
+  - create_summary
+
+dependencies: []
+
+consensus:
+  enabled: false
+  n_models: 1
+  judge_model: null
+
+tags:
+  - research
+  - science
+  - evidence
+  - synthesis
+  - hypothesis
+  - experimental-design
+  - cross-domain
+  - uncertainty-quantification

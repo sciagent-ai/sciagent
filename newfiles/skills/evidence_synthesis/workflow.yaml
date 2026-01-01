@@ -1,0 +1,354 @@
+# Evidence Synthesis Workflow
+# Declarative multi-phase execution for scientific research tasks
+
+name: evidence_synthesis_workflow
+version: "1.0.0"
+description: Multi-phase scientific evidence gathering and synthesis
+
+# Workflow phases executed in order
+phases:
+  - id: domain_detection
+    name: Domain Detection & Planning
+    description: Identify research domain and create search strategy
+    steps:
+      - action: analyze_query
+        description: Detect domain, query type, time sensitivity
+        outputs:
+          - domain
+          - query_type
+          - time_range
+          - source_priority
+      
+      - action: create_search_plan
+        tool: todo_write
+        description: Create structured search plan
+        inputs:
+          domain: "{{domain}}"
+          query_type: "{{query_type}}"
+    
+    success_criteria:
+      - domain_identified
+      - search_plan_created
+    
+    max_duration_minutes: 5
+
+  - id: evidence_gathering
+    name: Multi-Source Evidence Gathering
+    description: Search across academic, data, and methodology sources
+    
+    parallel: true  # These searches can run in parallel via sub-agents
+    
+    steps:
+      - action: search_academic
+        tool: web_search
+        queries:
+          - "{{topic}} review"
+          - "{{topic}} 2024"
+          - "{{topic}} meta-analysis"
+          - "arxiv {{topic}}"
+          - "pubmed {{topic}}"
+        max_results_per_query: 10
+      
+      - action: search_data
+        tool: web_search
+        queries:
+          - "{{topic}} dataset"
+          - "{{topic}} benchmark"
+          - "{{topic}} open data github"
+        max_results_per_query: 5
+      
+      - action: fetch_top_sources
+        tool: web_fetch
+        description: Fetch full content from top 5 most relevant sources
+        max_sources: 5
+      
+      - action: extract_evidence
+        description: Extract claims, data, methods from each source
+        outputs:
+          - evidence_table
+          - raw_data
+    
+    success_criteria:
+      - min_sources: 5
+      - evidence_table_created
+    
+    max_duration_minutes: 15
+
+  - id: contradiction_analysis
+    name: Contradiction & Uncertainty Analysis
+    description: Identify conflicts and quantify uncertainty
+    
+    steps:
+      - action: identify_contradictions
+        description: Compare claims across sources for conflicts
+        inputs:
+          evidence_table: "{{evidence_table}}"
+        outputs:
+          - contradiction_matrix
+      
+      - action: assess_uncertainty
+        description: Evaluate evidence quality and certainty levels
+        criteria:
+          - sample_size
+          - peer_review_status
+          - replication_status
+          - recency
+          - methodology_quality
+        outputs:
+          - uncertainty_assessment
+          - confidence_scores
+      
+      - action: create_evidence_synthesis
+        tool: str_replace_editor
+        description: Write evidence_synthesis.md with findings
+        file: evidence_synthesis.md
+    
+    success_criteria:
+      - contradictions_documented
+      - uncertainty_quantified
+    
+    max_duration_minutes: 10
+
+  - id: quantitative_synthesis
+    name: Quantitative Analysis
+    description: Statistical synthesis of numerical evidence
+    
+    conditional: has_quantitative_data
+    
+    steps:
+      - action: create_data_csv
+        tool: str_replace_editor
+        description: Create extracted_data.csv with numerical findings
+        file: data/extracted_data.csv
+      
+      - action: create_analysis_script
+        tool: str_replace_editor
+        description: Write reproducible Python analysis
+        file: data/analysis.py
+        template: |
+          """Reproducible evidence synthesis analysis."""
+          import pandas as pd
+          import numpy as np
+          from scipy import stats
+          import matplotlib.pyplot as plt
+          
+          # Load extracted data
+          df = pd.read_csv('extracted_data.csv')
+          
+          # Weighted mean calculation
+          # Forest plot
+          # Heterogeneity analysis
+          # Funnel plot for publication bias
+      
+      - action: run_analysis
+        tool: bash
+        command: "cd data && python analysis.py"
+      
+      - action: generate_figures
+        description: Create visualization outputs
+        outputs:
+          - figures/forest_plot.png
+          - figures/funnel_plot.png
+          - figures/trend_analysis.png
+    
+    success_criteria:
+      - analysis_completed
+      - figures_generated
+    
+    max_duration_minutes: 10
+
+  - id: hypothesis_generation
+    name: Hypothesis Generation
+    description: Generate novel, testable hypotheses from evidence gaps
+    
+    steps:
+      - action: identify_gaps
+        description: Find unanswered questions and understudied areas
+        inputs:
+          evidence_table: "{{evidence_table}}"
+          contradiction_matrix: "{{contradiction_matrix}}"
+        outputs:
+          - knowledge_gaps
+      
+      - action: generate_hypotheses
+        description: Create falsifiable hypotheses with predictions
+        template:
+          hypothesis: "Specific, falsifiable statement"
+          evidence_base: "Supporting evidence"
+          prediction: "If true, we would observe X"
+          contradicting_evidence: "What would disprove this"
+          confidence: "Low/Medium/High with reasoning"
+          novelty_score: 1-10
+          testability_score: 1-10
+          impact_score: 1-10
+        outputs:
+          - hypotheses_ranked
+      
+      - action: write_hypotheses
+        tool: str_replace_editor
+        file: hypotheses.md
+    
+    success_criteria:
+      - min_hypotheses: 3
+      - hypotheses_ranked
+    
+    max_duration_minutes: 10
+
+  - id: experimental_design
+    name: Experimental Design
+    description: Design validation experiments for top hypotheses
+    
+    steps:
+      - action: select_top_hypothesis
+        description: Choose highest-impact testable hypothesis
+        inputs:
+          hypotheses_ranked: "{{hypotheses_ranked}}"
+      
+      - action: design_experiment
+        description: Create full experimental protocol
+        components:
+          - study_type
+          - controls
+          - variables
+          - methods
+          - timeline
+      
+      - action: power_analysis
+        tool: bash
+        description: Calculate required sample size
+        command: |
+          python -c "
+          from scipy import stats
+          import numpy as np
+          
+          # Effect size from literature
+          effect_size = {{expected_effect_size}}
+          alpha = 0.05
+          power = 0.80
+          
+          # Calculate n for two-sample t-test
+          from scipy.stats import norm
+          z_alpha = norm.ppf(1 - alpha/2)
+          z_beta = norm.ppf(power)
+          n = 2 * ((z_alpha + z_beta) / effect_size) ** 2
+          print(f'Required n per group: {int(np.ceil(n))}')
+          "
+      
+      - action: define_outcomes
+        description: Specify expected outcomes with decision criteria
+        outputs:
+          - primary_endpoint
+          - secondary_endpoints
+          - success_criteria
+          - failure_criteria
+      
+      - action: risk_assessment
+        description: Identify confounders and risks
+        outputs:
+          - risk_register
+      
+      - action: write_protocol
+        tool: str_replace_editor
+        file: experimental_design.md
+    
+    success_criteria:
+      - protocol_complete
+      - power_analysis_done
+      - risks_identified
+    
+    max_duration_minutes: 10
+
+  - id: finalization
+    name: Finalization & Quality Check
+    description: Validate outputs and create summary
+    
+    steps:
+      - action: quality_check
+        description: Verify all outputs meet quality criteria
+        checklist:
+          - multiple_sources_consulted
+          - contradictions_documented
+          - uncertainty_quantified
+          - hypotheses_falsifiable
+          - experiments_have_controls
+          - analyses_reproducible
+          - limitations_acknowledged
+      
+      - action: create_summary
+        tool: create_summary
+        description: Generate executive summary
+      
+      - action: update_progress
+        tool: update_progress_md
+        description: Record completion in progress.md
+    
+    success_criteria:
+      - quality_check_passed
+      - all_artifacts_created
+
+# Output artifacts
+outputs:
+  - evidence_synthesis.md
+  - hypotheses.md
+  - experimental_design.md
+  - data/extracted_data.csv
+  - data/analysis.py
+  - figures/
+
+# Domain-specific configurations
+domain_configs:
+  chemistry:
+    priority_sources:
+      - pubchem
+      - materials_project
+      - crystallography_databases
+    key_metrics:
+      - yield
+      - purity
+      - stability
+      - cost
+  
+  biology:
+    priority_sources:
+      - pubmed
+      - biorxiv
+      - clinical_trials
+    key_metrics:
+      - effect_size
+      - hazard_ratio
+      - nnt
+  
+  physics:
+    priority_sources:
+      - arxiv
+      - ieee
+      - simulation_benchmarks
+    key_metrics:
+      - accuracy
+      - precision
+      - computational_cost
+  
+  data_science:
+    priority_sources:
+      - papers_with_code
+      - arxiv
+      - benchmark_leaderboards
+    key_metrics:
+      - accuracy
+      - f1_score
+      - auroc
+      - training_cost
+
+# Error handling
+error_handling:
+  on_search_failure:
+    action: retry_with_alternative_query
+    max_retries: 2
+  
+  on_insufficient_evidence:
+    action: expand_search_scope
+    fallback: note_limitation
+  
+  on_analysis_error:
+    action: simplify_analysis
+    fallback: qualitative_synthesis
