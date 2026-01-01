@@ -95,7 +95,7 @@ class Config:
     models: Optional[List[str]] = None
     working_dir: str = "."
     max_iterations: int = 25
-    max_tool_executions_per_iteration: int = 15
+    max_tool_executions_per_iteration: int = 50
     max_consecutive_same_tool: int = 15
     debug_mode: bool = False
     verbosity: str = "standard"

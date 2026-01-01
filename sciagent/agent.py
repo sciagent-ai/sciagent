@@ -344,6 +344,8 @@ class SCIAgent(CoreAgent):
                             # Handle malformed bash calls with proper error result
                             if tool_name == "bash" and "command" not in tool_input:
                                 print(f"⚠️ Malformed bash call - missing 'command' parameter")
+                                print(f"   Raw arguments string: {repr(tool_args_str)}")
+                                print(f"   Parsed as: {tool_input}")
                                 messages.append({
                                     "role": "tool",
                                     "name": tool_name,
