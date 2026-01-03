@@ -1,0 +1,53 @@
+name: evidence_synthesis
+description: |
+  Scientific evidence gathering with proper citations and references.
+  Uses "Search Once, Fetch Deep" strategy to minimize API calls while
+  maximizing data quality. All outputs include properly formatted citations.
+
+version: "2.0.0"
+domain: scientific
+horizontal: true
+
+triggers:
+  - research
+  - literature
+  - papers
+  - studies
+  - evidence
+  - synthesis
+  - hypothesis
+  - experimental design
+  - predict
+  - forecast
+  - analyze
+  - scientific
+  - pubmed
+  - arxiv
+  - compare studies
+  - meta-analysis
+  - systematic review
+  - cite
+  - citation
+  - reference
+  - review
+
+allowed_tools:
+  - web_search
+  - web_fetch
+  - bash
+  - str_replace_editor
+  - list_directory
+  - glob_search
+  - grep_search
+  - create_summary
+
+dependencies: []
+
+tags:
+  - research
+  - science
+  - evidence
+  - citations
+  - references
+  - synthesis
+  - hypothesis

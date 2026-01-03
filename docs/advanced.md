@@ -33,6 +33,9 @@ export SCIAGENT_PROGRESS_TRACKING="true"
 export SCIAGENT_WEB_ENABLED="true"
 export SCIAGENT_NOTEBOOKS_ENABLED="true"
 export SCIAGENT_SKILLS_ENABLED="true"
+
+# Enhanced Web Search
+export BRAVE_SEARCH_API_KEY="your_brave_key"
 ```
 
 ### Configuration File
@@ -169,9 +172,14 @@ skills:
     priority: medium
     
   research:
-    triggers: ["literature", "papers", "review", "survey", "academic"]
-    tools: ["web_search", "web_fetch", "str_replace_editor"]
+    triggers: ["literature", "papers", "review", "survey", "academic", "evidence", "synthesis"]
+    tools: ["web_search", "web_fetch", "str_replace_editor", "save_memory", "recall_memory"]
     priority: medium
+    
+  cognitive_tools:
+    triggers: ["memory", "recall", "remember", "insight", "reflection", "learning"]
+    tools: ["save_memory", "recall_memory", "reflect"]
+    priority: high
 ```
 
 ### Skill Override
@@ -182,6 +190,9 @@ python -m sciagent --force-skill data_science "Analyze this dataset"
 
 # Disable specific skills
 python -m sciagent --disable-skills research,web_development "Code-only task"
+
+# Enable memory system for learning tasks
+python -m sciagent --force-skill cognitive_tools "Analyze and remember key insights"
 ```
 
 ---
@@ -205,7 +216,7 @@ python -m sciagent --web-timeout 60 "Fetch large documents"
 python -m sciagent --safe-mode "Automated analysis"
 
 # Whitelist specific tools only
-python -m sciagent --allowed-tools "str_replace_editor,web_search" "Research task"
+python -m sciagent --allowed-tools "str_replace_editor,web_search,save_memory" "Research task"
 ```
 
 ---

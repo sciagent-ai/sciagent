@@ -73,6 +73,9 @@ export OPENAI_API_KEY="your_key"
 export ANTHROPIC_API_KEY="your_key"
 # or
 export MISTRAL_API_KEY="your_key"
+
+# Optional: For enhanced web search
+export BRAVE_SEARCH_API_KEY="your_brave_key"
 ```
 
 ---
@@ -208,24 +211,25 @@ Using the agent inside a git repository is strongly recommended.
 
 ## Common Usage Patterns
 
-### Literature Review
+### Literature Review & Evidence Synthesis
 
 ```bash
 python -m sciagent "
 Search recent literature on topic X,
-summarize key approaches,
-and produce a structured markdown report.
+synthesize evidence with proper citations,
+save insights to memory for future reference.
 "
 ```
 
-### Scientific Data Analysis
+### Scientific Data Analysis with Memory
 
 ```bash
 python -m sciagent "
 Load experimental_data.csv,
 clean the data,
 perform statistical analysis,
-and generate plots.
+generate plots,
+and save key findings to memory.
 "
 ```
 

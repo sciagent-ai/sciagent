@@ -39,11 +39,17 @@ sciagent/
 ├── config.py               # Configuration management
 ├── tools/                  # Tool implementations
 │   ├── __init__.py
-│   ├── base.py            # Base tool class
-│   ├── file_ops.py        # File operation tools
-│   ├── execution.py       # Shell execution tools
-│   ├── search.py          # Search and analysis tools
-│   └── web.py             # Web interaction tools
+│   ├── core/              # Core tools
+│   │   ├── __init__.py
+│   │   ├── str_replace_editor.py    # File operations
+│   │   ├── bash.py                  # Shell execution
+│   │   ├── web_search.py           # Web search (Brave/DuckDuckGo)
+│   │   ├── save_memory.py          # Memory persistence
+│   │   ├── recall_memory.py        # Memory retrieval
+│   │   ├── reflect.py              # Post-task reflection
+│   │   └── ...                     # Other core tools
+│   └── domain/            # Domain-specific tools
+│       └── __init__.py
 ├── models/                 # LLM interface layer
 │   ├── __init__.py
 │   ├── base.py            # Base model interface
@@ -52,9 +58,14 @@ sciagent/
 │   └── litellm.py         # LiteLLM wrapper
 ├── skills/                 # Skill routing system
 │   ├── __init__.py
-│   ├── base.py            # Base skill class
-│   ├── registry.py        # Skill registration
-│   └── definitions/       # Skill implementations
+│   ├── evidence_synthesis/         # Scientific research skill
+│   │   ├── skill.py
+│   │   ├── workspace_manager.py
+│   │   └── web_search.py
+│   ├── evidence_synthesis_v2/      # Enhanced research skill
+│   ├── experiment_design/          # Scientific experiment design
+│   ├── literature_search/          # Academic literature search
+│   └── software_engineering/       # Code development skill
 ├── state/                  # State management
 │   ├── __init__.py
 │   ├── manager.py         # State persistence
@@ -251,7 +262,7 @@ matches = grep.execute(
     file_types=["py"]
 )
 
-# Web search
+# Web search (with Brave API support)
 web_search = WebSearch()
 results = web_search.execute(query="machine learning papers 2024")
 
@@ -260,6 +271,21 @@ web_fetch = WebFetch()
 content = web_fetch.execute(
     url="https://example.com/article",
     extract_text=True
+)
+
+# Memory operations
+save_memory = SaveMemoryTool()
+save_memory.execute(
+    key="ml_insight_2024",
+    content="Transformers show 15% improvement in efficiency",
+    tags=["machine_learning", "transformers", "efficiency"],
+    memory_type="insight"
+)
+
+recall_memory = RecallMemoryTool()
+results = recall_memory.execute(
+    query="transformer efficiency",
+    memory_type="insight"
 )
 ```
 

@@ -154,6 +154,9 @@ export XAI_API_KEY="your_key"
 
 # Cohere
 export COHERE_API_KEY="your_key"
+
+# Brave Search (recommended for enhanced web research)
+export BRAVE_SEARCH_API_KEY="your_key"
 ```
 
 ### Configuration Parameters
@@ -250,7 +253,7 @@ The SCI Agent includes 17+ core tools for comprehensive scientific and engineeri
 
 ### Search & Analysis
 - **`grep_search`** - Regex pattern searching across files
-- **`web_search`** - DuckDuckGo integration for research
+- **`web_search`** - DuckDuckGo/Brave integration for research
 - **`web_fetch`** - Fetch and analyze web content
 
 ### Execution & Development
@@ -258,12 +261,15 @@ The SCI Agent includes 17+ core tools for comprehensive scientific and engineeri
 - **`git_operations`** - Smart git workflows with auto-commit
 - **`notebook_edit`** - Jupyter notebook creation and editing
 
-### Task Management
+### Task Management & Cognition
 - **`task_agent`** - Spawn specialized sub-agents
 - **`todo_write`** - Task tracking and progress management
 - **`create_summary`** - Intelligent conversation summarization
 - **`update_progress_md`** - Progress reporting
 - **`ask_user_step`** - Interactive user guidance
+- **`save_memory`** - Save insights and findings to persistent storage
+- **`recall_memory`** - Search and retrieve previously saved insights
+- **`reflect`** - Post-task analysis and learning from successes/failures
 
 ### Monitoring
 - **`performance_monitor`** - Real-time performance tracking
@@ -285,10 +291,11 @@ The SCI Agent includes a sophisticated skill routing system for specialized capa
 - **Use Cases**: DOE, Bayesian optimization, statistical analysis
 - **Dependencies**: numpy, scipy, matplotlib
 
-#### Literature Search
-- **Triggers**: literature, papers, research, articles, citations
-- **Tools**: Web search, content analysis, summarization
-- **Use Cases**: Research synthesis, bibliography creation, literature reviews
+#### Literature Search & Evidence Synthesis
+- **Triggers**: literature, papers, research, articles, citations, evidence, synthesis
+- **Tools**: Web search, content analysis, summarization, memory system
+- **Use Cases**: Research synthesis, bibliography creation, literature reviews, evidence-based analysis
+- **Features**: File-based workspace management, citation formatting, source tracking
 
 ### Skill Configuration
 

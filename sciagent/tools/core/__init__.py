@@ -34,6 +34,11 @@ __all__ = [
     "web_fetch",
     "web_search",
     "ask_user_step",
+    # Memory system tools
+    "save_memory",
+    "recall_memory",
+    # Reflection and learning tools
+    "reflect",
     # Enhanced tools for Claude Code parity
     "multi_edit",
     "git_operations", 

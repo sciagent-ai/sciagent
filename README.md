@@ -47,7 +47,7 @@ export XAI_API_KEY=xai-...
 export AZURE_API_KEY=...
 export AZURE_API_BASE="https://<your-resource>.openai.azure.com"
 
-# Brave Search (optional, for enhanced web search)
+# Brave Search (recommended for enhanced web search)
 export BRAVE_SEARCH_API_KEY=BSA-...
 ```
 
@@ -142,22 +142,48 @@ sciagent/
 
 The agent comes with a comprehensive set of tools:
 
+### Core Tools
 - **File Operations**: Create, edit, search files with intelligent editing
 - **Bash Execution**: Run shell commands with safety checks
-- **Web Search**: DuckDuckGo integration for research
+- **Web Search**: DuckDuckGo/Brave integration for research
 - **Web Fetch**: Retrieve and analyze web content
 - **Notebook Editing**: Jupyter notebook manipulation
 - **Directory Listing**: Explore project structure
 - **Progress Tracking**: Automatic documentation generation
 - **Sub-Agent Tasks**: Spawn specialized agents for complex subtasks
 
+### Cognitive Tools
+- **Memory System**: Save and recall insights across sessions (`save_memory`, `recall_memory`)
+- **Reflection**: Post-task analysis and learning (`reflect`)
+- **Evidence Synthesis**: Scientific literature analysis with workspace management
+
+### Skills System
+- **Evidence Synthesis**: Advanced scientific research with file-based memory
+- **Experiment Design**: Scientific experiment planning
+- **Literature Search**: Academic paper discovery and analysis
+- **Software Engineering**: Code development and architecture
+
 ## Examples
+
+### Scientific Research
+```bash
+python -m sciagent \
+  --max-iterations 30 \
+  "Research CRISPR gene editing efficiency: Cas9 vs Cas12a vs base editors. Create evidence-based comparison with citations."
+```
 
 ### Code Analysis
 ```bash
 python -m sciagent \
   --working-dir /path/to/project \
   "Analyze this codebase and identify potential security vulnerabilities"
+```
+
+### Evidence Synthesis
+```bash
+python -m sciagent \
+  --max-iterations 20 \
+  "Search for recent papers on quantum computing error correction. Save findings to workspace and synthesize key insights."
 ```
 
 ### Feature Development
@@ -174,11 +200,11 @@ python -m sciagent \
   "Generate comprehensive API documentation for all Python modules"
 ```
 
-### Bug Fixing
+### Bug Fixing with Memory
 ```bash
 python -m sciagent \
   --resume task_123 \
-  "Continue debugging the database connection issues"
+  "Continue debugging the database connection issues. Save any insights for future reference."
 ```
 
 ## Configuration
@@ -188,8 +214,10 @@ The agent uses a `Config` dataclass for all settings. Key configuration options:
 - **API Integration**: Supports multiple providers with automatic key detection
 - **Model Fallback**: Specify backup models for reliability
 - **Resource Limits**: Control iteration counts and sub-agent spawning
-- **Feature Toggles**: Enable/disable web access, notebook support, etc.
+- **Feature Toggles**: Enable/disable web access, notebook support, skills, etc.
 - **State Management**: Configure persistence and progress tracking
+- **Memory System**: Automatic saving of insights and learnings to `.sciagent_workspace/`
+- **Skills Integration**: Optional domain-specific capabilities (evidence synthesis, etc.)
 
 ## Progress Tracking
 

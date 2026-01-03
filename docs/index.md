@@ -11,7 +11,7 @@ permalink: /
 Welcome to **SciAgent** documentation.
 
 SciAgent is an AI-powered agent for scientific computing and engineering workflows.
-It executes multi-step tasks, tracks progress, and supports resumable runs.
+It executes multi-step tasks, tracks progress, supports resumable runs, and includes advanced cognitive capabilities like memory systems, reflection, and evidence synthesis.
 
 ---
 

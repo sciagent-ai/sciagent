@@ -47,6 +47,7 @@ from .display import AgentDisplay
 from .tool_registry import DynamicToolRegistry
 from .model_config import get_model_with_provider, PROVIDER_PATTERNS
 from .core_agent import CoreAgent
+from .workspace_pattern import get_task_guidance, AGENT_PROMPT_ADDITION
 
 
 class SCIAgent(CoreAgent):
@@ -134,9 +135,9 @@ class SCIAgent(CoreAgent):
     # -------------------------------------------------------------------------
     # CoreAgent Implementation
     # -------------------------------------------------------------------------
-    def build_system_prompt(self) -> str:
+    def build_system_prompt(self, task: str = "") -> str:
         """Build the SWE-specific system prompt."""
-        return self._build_scientific_system_prompt()
+        return self._build_scientific_system_prompt(task)
 
     # -------------------------------------------------------------------------
     # Public API
@@ -685,7 +686,7 @@ class SCIAgent(CoreAgent):
         if len(self.state.last_tool_executions) > 20:
             self.state.last_tool_executions = self.state.last_tool_executions[-20:]
 
-    def _build_scientific_system_prompt(self) -> str:
+    def _build_scientific_system_prompt(self, task: str = "") -> str:
         """Build the system prompt describing all capabilities and context."""
         # Precompute capability descriptions that depend on configuration to avoid
         # f-string expressions containing newline characters. f-strings cannot
@@ -751,7 +752,14 @@ class SCIAgent(CoreAgent):
                 "Continue building on this comprehensive progress."
             )
             base_prompt += context
-        return base_prompt + f"\n\nWorking directory: {os.getcwd()}\nTools available: {len(self.tools)}"
+        # Add workspace pattern guidance for complex tasks
+        workspace_guidance = AGENT_PROMPT_ADDITION
+        if task:
+            # Add task-specific guidance if this is a complex task
+            task_specific_guidance = get_task_guidance(task)
+            workspace_guidance += task_specific_guidance
+        
+        return base_prompt + workspace_guidance + f"\n\nWorking directory: {os.getcwd()}\nTools available: {len(self.tools)}"
 
     # -------------------------------------------------------------------------
     # Unified LLM helper methods
@@ -1098,81 +1106,6 @@ class SCIAgent(CoreAgent):
         except Exception as e:
             return {"success": False, "error": str(e)}
 
-    def _execute_task_agent(self, tool_input: Dict[str, Any]) -> Dict[str, Any]:
-        """Spawn a sub-agent to handle a specialized task."""
-        try:
-            description = tool_input["description"]
-            prompt = tool_input["prompt"]
-            agent_type = tool_input.get("agent_type", "general")
-            if self.active_sub_agents >= self.config.max_sub_agents:
-                return {
-                    "success": False,
-                    "error": f"Maximum sub-agents ({self.config.max_sub_agents}) already active",
-                }
-            self.display.show_status(f"Spawning {agent_type} sub-agent", description)
-            self.active_sub_agents += 1
-            try:
-                sub_config = Config(
-                    api_key=self.config.api_key,
-                    working_dir=self.config.working_dir,
-                    max_iterations=8,
-                    debug_mode=False,
-                    enable_web=agent_type in ["research", "general"],
-                    enable_notebooks=agent_type in ["analysis", "general"],
-                )
-                sub_agent = SCIAgent(
-                    config=sub_config,
-                    progress_callback=self._handle_sub_agent_progress,
-                    indent_level=self.indent_level + 1,
-                )
-                # Filter tools based on type
-                if agent_type == "search":
-                    sub_agent.tools = [t for t in self.tools if t["name"] in ["glob_search", "grep_search", "list_directory", "str_replace_editor"]]
-                elif agent_type == "analysis":
-                    sub_agent.tools = [t for t in self.tools if t["name"] in ["str_replace_editor", "grep_search", "bash", "create_summary"]]
-                elif agent_type == "coding":
-                    sub_agent.tools = [t for t in self.tools if t["name"] in ["str_replace_editor", "bash", "glob_search", "grep_search"]]
-                elif agent_type == "debugging":
-                    sub_agent.tools = [t for t in self.tools if t["name"] in ["str_replace_editor", "bash", "grep_search", "list_directory"]]
-                else:
-                    sub_agent.tools = self.tools[:6]
-                sub_agent.state = None
-                print(f"{self.display.indent}📊 Spawning {agent_type} sub-agent")
-                print(f"{self.display.indent}🔧 Sub-agent tools: {len(sub_agent.tools)}")
-                print(f"{self.display.indent}⚡ Task: {description}")
-                import time
-                start_time = time.time()
-                try:
-                    result = sub_agent.execute_task(prompt)
-                    elapsed = time.time() - start_time
-                    print(f"{self.display.indent}✅ Sub-agent completed in {elapsed:.1f}s")
-                except Exception as e:
-                    elapsed = time.time() - start_time
-                    print(f"{self.display.indent}❌ Sub-agent failed after {elapsed:.1f}s: {str(e)}")
-                    raise
-                sub_result = {
-                    "agent_type": agent_type,
-                    "description": description,
-                    "success": result["success"],
-                    "iterations": result["iterations"],
-                    "response": result.get("final_response", ""),
-                    "timestamp": datetime.datetime.now().isoformat(),
-                }
-                self.state.sub_agent_results.append(sub_result)
-                return {
-                    "success": result["success"],
-                    "output": (
-                        f"Sub-agent ({agent_type}) completed in {result['iterations']} iterations:\n"
-                        + result.get("final_response", "No response")[:500]
-                        + ("..." if len(str(result.get("final_response", ""))) > 500 else "")
-                    ),
-                    "sub_agent_result": sub_result,
-                }
-            finally:
-                self.active_sub_agents -= 1
-        except Exception as e:
-            self.active_sub_agents -= 1
-            return {"success": False, "error": str(e)}
 
     def _execute_web_fetch(self, tool_input: Dict[str, Any]) -> Dict[str, Any]:
         """Fetch content from a web URL with a prompt for analysis."""

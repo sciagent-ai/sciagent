@@ -70,6 +70,9 @@ class CoreAgent(ABC):
             except Exception as e:
                 print(f"⚠️ Could not configure LiteLLM: {e}")
         
+        # Initialize sub-agent tracking
+        self.active_sub_agents = 0
+        
         # Initialize performance monitor if enabled
         self.performance_monitor = None
         if getattr(config, 'enable_performance_monitoring', False):
@@ -136,9 +139,12 @@ class CoreAgent(ABC):
             os.chdir(config.working_dir)
 
     @abstractmethod
-    def build_system_prompt(self) -> str:
+    def build_system_prompt(self, task: str = "") -> str:
         """Build the system prompt for this agent type.
         
+        Args:
+            task: Optional task description for dynamic prompt generation
+            
         Returns:
             str: The complete system prompt for the agent
         """
