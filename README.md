@@ -163,6 +163,11 @@ The agent comes with a comprehensive set of tools:
 - **Literature Search**: Academic paper discovery and analysis
 - **Software Engineering**: Code development and architecture
 
+**Note**: Skills are loaded from a `skills/` directory in your working directory. To use skills, copy them from the project's `skills/` folder to your working directory:
+```bash
+cp -r /path/to/sciagent/skills /your/working/directory/
+```
+
 ## Examples
 
 ### Scientific Research

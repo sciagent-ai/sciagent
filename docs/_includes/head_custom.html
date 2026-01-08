@@ -1,0 +1,18 @@
+<!-- Custom head content for SciAgent documentation -->
+<link rel="icon" type="image/x-icon" href="{{ '/favicon.ico' | relative_url }}">
+<link rel="shortcut icon" type="image/x-icon" href="{{ '/favicon.ico' | relative_url }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ '/Logo.png' | relative_url }}">
+
+<!-- SEO and social media meta tags -->
+<meta name="description" content="{{ page.description | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}">
+<meta property="og:title" content="{{ page.title | default: site.title | escape }}">
+<meta property="og:description" content="{{ page.description | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}">
+<meta property="og:image" content="{{ '/Logo.png' | absolute_url }}">
+<meta property="og:url" content="{{ page.url | absolute_url }}">
+<meta property="og:site_name" content="{{ site.title | escape }}">
+<meta property="og:type" content="website">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ page.title | default: site.title | escape }}">
+<meta name="twitter:description" content="{{ page.description | default: site.description | strip_html | normalize_whitespace | truncate: 160 | escape }}">
+<meta name="twitter:image" content="{{ '/Logo.png' | absolute_url }}">

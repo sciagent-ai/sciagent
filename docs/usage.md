@@ -276,7 +276,18 @@ The SCI Agent includes 17+ core tools for comprehensive scientific and engineeri
 
 ## Skills System
 
-The SCI Agent includes a sophisticated skill routing system for specialized capabilities:
+The SCI Agent includes a sophisticated skill routing system for specialized capabilities.
+
+**Important**: Skills are loaded from a `skills/` directory in your **working directory**, not the project directory. To use skills:
+
+```bash
+# Copy skills to your working directory
+cp -r /path/to/sciagent/skills /your/working/directory/
+
+# Or run from the sciagent project directory
+cd /path/to/sciagent
+python -m sciagent "your task here"
+```
 
 ### Available Skills
 

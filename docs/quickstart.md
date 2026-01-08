@@ -123,6 +123,11 @@ The agent exposes switches to control capabilities at runtime:
 | `--no-notebooks` | Disable Jupyter notebook tools        |
 | `--no-skills`    | Disable skill routing (maximum speed) |
 
+**Skills Setup**: Skills are loaded from a `skills/` directory in your working directory. To enable:
+```bash
+cp -r /path/to/sciagent/skills ./
+```
+
 Examples:
 
 ```bash

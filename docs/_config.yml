@@ -1,6 +1,6 @@
 # Site settings
 title: SciAgent
-description: Documentation for SciAgent
+description: "AI-powered scientific computing and engineering agent with multi-LLM support"
 url: "https://sciagent-ai.github.io"
 baseurl: "/sciagent"
 
@@ -10,8 +10,13 @@ remote_theme: just-the-docs/just-the-docs
 # Color scheme (optional: light, dark, or custom)
 color_scheme: nil  # Uses default light theme
 
-# Logo (optional - add your logo to /assets/images/)
-# logo: "/assets/images/logo.png"
+# Logo and branding
+logo: "Logo.png"
+favicon_ico: "favicon.ico"
+
+# Additional site metadata
+author: "SciAgent Team"
+lang: "en-US"
 
 # Search
 search_enabled: true
