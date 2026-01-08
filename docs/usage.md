@@ -3,7 +3,7 @@ layout: default
 title: Usage
 nav_order: 5
 ---
-# SCI Agent - Comprehensive Usage Guide
+# SciAgent - Comprehensive Usage Guide
 
 A complete AI-powered scientific computing and engineering agent with multi-LLM support, advanced reasoning capabilities, and comprehensive toolset for complex technical tasks.
 

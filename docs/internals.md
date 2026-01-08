@@ -4,9 +4,9 @@ title: Internal APIs & Architecture
 nav_order: 4
 ---
 
-# SCI Agent – Internal APIs & Architecture
+# SciAgent – Internal APIs & Architecture
 
-This guide documents the internal architecture, APIs, and extension points for developers who want to understand, modify, or extend SCI Agent.
+This guide documents the internal architecture, APIs, and extension points for developers who want to understand, modify, or extend SciAgent.
 
 ---
 
@@ -735,4 +735,4 @@ profiler.save_report("profile.html")
 
 ---
 
-This documentation covers the internal architecture and APIs for extending and customizing SCI Agent. For usage examples and configuration options, see the quickstart and advanced guides.
+This documentation covers the internal architecture and APIs for extending and customizing SciAgent. For usage examples and configuration options, see the quickstart and advanced guides.

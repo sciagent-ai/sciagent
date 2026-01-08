@@ -1,4 +1,4 @@
-# SCI Agent with Multi-LLM Support
+# SciAgent with Multi-LLM Support
 
 A comprehensive AI-powered scientific computing and engineering agent that can perform complex scientific and engineering tasks using multiple LLM providers through LiteLLM integration. This agent supports OpenAI, Anthropic, Google (Gemini), xAI (Grok), Mistral, Azure OpenAI, and many other providers with intelligent fallback capabilities and advanced reasoning support.
 

@@ -4,7 +4,7 @@ title: Quick Start
 nav_order: 2
 ---
 
-# SCI Agent – Quick Start Guide
+# SciAgent – Quick Start Guide
 
 SCI Agent is a command-line AI agent for scientific computing and engineering workflows.
 It can plan and execute multi-step tasks such as literature review, code generation,

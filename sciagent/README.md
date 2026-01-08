@@ -1,4 +1,4 @@
-Scientific SCI Agent
+Scientific SciAgent
 This project provides a modular, production–ready AI code assistant. It is designed to execute software-engineering tasks by orchestrating a suite of tools such as file editors, pattern searchers, task managers, Jupyter notebook operations and even the ability to spawn sub‑agents for specialised work. The original monolithic script has been refactored into a clean package structure to improve maintainability and ease of use.
 
 Features

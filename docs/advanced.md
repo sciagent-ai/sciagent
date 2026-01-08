@@ -4,7 +4,7 @@ title: Advanced Configuration
 nav_order: 3
 ---
 
-# SCI Agent – Advanced Configuration
+# SciAgent – Advanced Configuration
 
 This guide covers advanced usage patterns, configuration options, and optimization strategies for power users and production deployments.
 
@@ -570,5 +570,5 @@ register_hook(PreExecutionHook())
 
 ---
 
-This covers the advanced configuration options and patterns for SCI Agent.
+This covers the advanced configuration options and patterns for SciAgent.
 For internal API documentation and architecture details, see the internals guide.
