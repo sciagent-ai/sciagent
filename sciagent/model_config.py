@@ -89,6 +89,9 @@ MODEL_MAPPINGS: Dict[str, str] = {
 
     # xAI models (verified from docs.litellm.ai)
     # Grok 4 series (latest with reasoning capabilities)
+    "grok-4-1-fast": "xai/grok-4-1-fast",
+    "grok-4-1-fast-reasoning": "xai/grok-4-1-fast-reasoning",
+    "grok-4-1-fast-non-reasoning": "xai/grok-4-1-fast-non-reasoning",
     "grok-4.1-fast-reasoning": "xai/grok-4.1-fast-reasoning",
     "grok-4.1": "xai/grok-4.1",
     "grok-4": "xai/grok-4",
@@ -183,7 +186,8 @@ def get_coding_models() -> Dict[str, str]:
         "gpt-5.2": "Excellent reasoning - best for complex problem-solving",
         "gpt-4.1": "Strong at frontend and instruction following",
         "gemini-3.0-flash-thinking-experimental": "Latest Gemini with advanced thinking capabilities",
-        "grok-4.1-fast-reasoning": "xAI's latest with fast reasoning - good for complex analysis",
+        "grok-4-1-fast-reasoning": "xAI's latest with fast reasoning - good for complex analysis",
+        "grok-4-1-fast": "xAI's latest fast model with excellent tool calling",
         "codestral": "Mistral's specialized coding model",
     }
 
@@ -197,6 +201,7 @@ def get_reasoning_models() -> Dict[str, str]:
         "claude-opus-4-5-20251101": "Anthropic's most powerful reasoning model",
         "gpt-5.2": "OpenAI's latest with advanced reasoning",
         "gemini-3.0-flash-thinking-experimental": "Google's experimental thinking model",
-        "grok-4.1-fast-reasoning": "xAI's fast reasoning model",
+        "grok-4-1-fast-reasoning": "xAI's fast reasoning model",
+        "grok-4-1-fast": "xAI's latest fast model with tool calling",
         "grok-4.1": "xAI's powerful reasoning model",
     }
