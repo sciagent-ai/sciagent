@@ -284,6 +284,19 @@ class SCIAgent(CoreAgent):
                         self.display.show_thinking(assistant.content)
                     self.display.start_execution_phase()
                     
+                    # Ask for user confirmation before executing tools if enabled
+                    if self.config.user_confirmation and self._needs_tool_confirmation(tool_calls):
+                        print(f"\n⚠️ About to execute {len(tool_calls)} tool(s): {', '.join(self._get_tool_names(tool_calls))}")
+                        user_input = input("Proceed? (y/n/auto): ").strip().lower()
+                        if user_input == "n":
+                            messages.append({"role": "user", "content": "User declined tool execution. Please ask what they would like to do instead."})
+                            self.state.iteration_count += 1
+                            self._save_state()
+                            continue
+                        elif user_input == "auto":
+                            self.config.user_confirmation = False
+                            print("🔄 Switching to auto mode - no more confirmations this session")
+                    
                     # For each requested tool, execute it and append the result as a
                     # dedicated tool message. After executing all tools the agent
                     # continues to the next iteration to send the results back to the model.
@@ -500,13 +513,43 @@ class SCIAgent(CoreAgent):
                 # Check if task appears complete based on todos
                 task_completion_hint = self._analyze_task_completion()
                 
-                # Prompt the user to confirm completion
-                completion_prompt = "\n❓ Is the overall task complete? (y/n/continue)"
-                if task_completion_hint:
-                    completion_prompt += f"\n💡 Hint: {task_completion_hint}"
-                print(completion_prompt)
-                user_input = input("Response: ").strip().lower()
-                if user_input == "y":
+                # Ask for user confirmation if enabled
+                if self.config.user_confirmation:
+                    completion_prompt = "\n❓ Is the overall task complete? (y/n/continue)"
+                    if task_completion_hint:
+                        completion_prompt += f"\n💡 Hint: {task_completion_hint}"
+                    print(completion_prompt)
+                    user_input = input("Response: ").strip().lower()
+                    if user_input == "y":
+                        self._finalize_progress_md()
+                        self._cleanup_state()
+                        return {
+                            "success": True,
+                            "iterations": self.state.iteration_count + 1,
+                            "final_response": final_response,
+                            "task_id": self.state.task_id,
+                            "tools_used": len(self.tools),
+                            "files_created": len(self.state.files_tracking),
+                            "sub_agents_spawned": len(self.state.sub_agent_results),
+                        }
+                    elif user_input == "n":
+                        feedback = input("What still needs to be done? ")
+                        if feedback.strip():
+                            messages.append({"role": "user", "content": f"Task not complete. User feedback: {feedback}"})
+                        else:
+                            messages.append({"role": "user", "content": "Task not complete. Please continue working on the task."})
+                        # Continue the loop to process user feedback
+                        self.state.iteration_count += 1
+                        self._save_state()
+                        continue
+                    else:
+                        messages.append({"role": "user", "content": "Please continue working on the task with your full capabilities."})
+                        # Continue the loop to keep working
+                        self.state.iteration_count += 1
+                        self._save_state()
+                        continue
+                else:
+                    # Auto-complete when confirmation disabled
                     self._finalize_progress_md()
                     self._cleanup_state()
                     return {
@@ -518,11 +561,6 @@ class SCIAgent(CoreAgent):
                         "files_created": len(self.state.files_tracking),
                         "sub_agents_spawned": len(self.state.sub_agent_results),
                     }
-                elif user_input == "n":
-                    feedback = input("What still needs to be done? ")
-                    messages.append({"role": "user", "content": f"Task not complete. User feedback: {feedback}"})
-                else:
-                    messages.append({"role": "user", "content": "Please continue working on the task with your full capabilities."})
 
                 # Increment iteration and save state at the end of the iteration
                 self.state.iteration_count += 1
@@ -667,6 +705,30 @@ class SCIAgent(CoreAgent):
             return False
         
         return True
+    
+    def _needs_tool_confirmation(self, tool_calls) -> bool:
+        """Check if any of the tools being called need user confirmation."""
+        # Tools that should always prompt for confirmation
+        destructive_tools = {
+            'str_replace_editor', 'bash', 'task_agent', 
+            'web_fetch', 'web_search', 'ask_user_step'
+        }
+        
+        tool_names = self._get_tool_names(tool_calls)
+        return any(name in destructive_tools for name in tool_names)
+    
+    def _get_tool_names(self, tool_calls) -> List[str]:
+        """Extract tool names from tool calls."""
+        tool_names = []
+        for call in tool_calls:
+            try:
+                if isinstance(call, dict) and "function" in call:
+                    tool_names.append(call["function"]["name"])
+                elif hasattr(call, 'function') and hasattr(call.function, 'name'):
+                    tool_names.append(call.function.name)
+            except Exception:
+                tool_names.append("unknown")
+        return tool_names
     
     def _track_tool_execution(self, tool_name: str):
         """Track tool execution for limit checking."""

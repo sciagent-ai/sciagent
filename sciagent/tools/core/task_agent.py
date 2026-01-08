@@ -72,6 +72,7 @@ class TaskAgentTool(BaseTool):
                 # Configure sub-agent
                 sub_config = Config(
                     api_key=agent.config.api_key,
+                    model=agent.config.model,
                     working_dir=agent.config.working_dir,
                     max_iterations=8,
                     debug_mode=False,

@@ -87,6 +87,9 @@ class Config:
         like Anthropic, OpenAI o-series, Gemini 3.0+, and xAI Grok models.
     metrics_mode: bool
         Enable detailed metrics tracking including token usage and execution times.
+    user_confirmation: bool
+        Ask for user confirmation before executing potentially destructive operations
+        like file modifications, running commands, or continuing after task completion.
     """
 
     # Use Optional instead of PEP 604 union for compatibility with Python < 3.10
@@ -113,3 +116,4 @@ class Config:
     max_tokens: int = 4096
     reasoning_effort: str = "medium"
     metrics_mode: bool = True
+    user_confirmation: bool = True
