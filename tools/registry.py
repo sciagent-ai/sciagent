@@ -133,11 +133,11 @@ def create_atomic_registry(working_dir: str = ".") -> ToolRegistry:
 
     Total: 5 tools
     """
-    from tools.atomic.shell import ShellTool
-    from tools.atomic.file_ops import FileOpsTool
-    from tools.atomic.search import SearchTool
-    from tools.atomic.web import WebTool
-    from tools.atomic.todo import TodoTool
+    from .atomic.shell import ShellTool
+    from .atomic.file_ops import FileOpsTool
+    from .atomic.search import SearchTool
+    from .atomic.web import WebTool
+    from .atomic.todo import TodoTool
 
     registry = ToolRegistry()
 

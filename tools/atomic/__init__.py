@@ -9,11 +9,11 @@ These 5 tools handle 90% of scientific/engineering tasks:
 - todo: Track task progress
 """
 
-from tools.atomic.shell import ShellTool
-from tools.atomic.file_ops import FileOpsTool
-from tools.atomic.search import SearchTool
-from tools.atomic.web import WebTool
-from tools.atomic.todo import TodoTool
+from .shell import ShellTool
+from .file_ops import FileOpsTool
+from .search import SearchTool
+from .web import WebTool
+from .todo import TodoTool
 
 __all__ = [
     "ShellTool",

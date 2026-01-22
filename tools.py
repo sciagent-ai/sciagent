@@ -496,10 +496,35 @@ class StrReplaceTool(BaseTool):
 
 
 def create_default_registry(working_dir: str = ".") -> ToolRegistry:
-    """Create a registry with default tools"""
-    registry = ToolRegistry()
-    registry.register(BashTool(working_dir))
-    registry.register(ViewTool())
-    registry.register(WriteFileTool(working_dir))
-    registry.register(StrReplaceTool(working_dir))
-    return registry
+    """Create a registry with default tools.
+
+    Uses the atomic tool set (5 tools) which includes:
+    - bash: Shell execution with smart timeouts
+    - file_ops: Read/write/edit/list files
+    - search: Glob and grep for files and content
+    - web: Search the web and fetch URLs
+    - todo: Task tracking with dependencies
+    """
+    # Try to use the atomic tools (preferred)
+    try:
+        from tools.atomic.shell import ShellTool
+        from tools.atomic.file_ops import FileOpsTool
+        from tools.atomic.search import SearchTool
+        from tools.atomic.web import WebTool
+        from tools.atomic.todo import TodoTool
+
+        registry = ToolRegistry()
+        registry.register(ShellTool(working_dir))
+        registry.register(FileOpsTool(working_dir))
+        registry.register(SearchTool(working_dir))
+        registry.register(WebTool())
+        registry.register(TodoTool())
+        return registry
+    except ImportError:
+        # Fallback to basic tools if atomic tools not available
+        registry = ToolRegistry()
+        registry.register(BashTool(working_dir))
+        registry.register(ViewTool())
+        registry.register(WriteFileTool(working_dir))
+        registry.register(StrReplaceTool(working_dir))
+        return registry

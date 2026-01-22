@@ -118,8 +118,8 @@ Examples:
     parser.add_argument(
         "--max-iterations",
         type=int,
-        default=10,
-        help="Maximum agent loop iterations (default: 10)"
+        default=30,
+        help="Maximum agent loop iterations (default: 30)"
     )
     
     parser.add_argument(

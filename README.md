@@ -1,1 +1,194 @@
-# sciagent-1
+# SciAgent
+
+A modular, extensible agent framework for software engineering and scientific computing tasks. Inspired by Claude Code, SciAgent implements an autonomous agent loop that can plan work, execute tools, and iterate until tasks are complete.
+
+## Features
+
+- **Autonomous Agent Loop**: Think-Act-Observe cycle with automatic iteration
+- **Multi-Model Support**: Works with Anthropic, OpenAI, Google, and local models via LiteLLM
+- **Task Management**: Built-in todo system for tracking complex multi-step tasks
+- **Web Research**: Search and fetch web content for research tasks
+- **Sub-Agents**: Spawn specialized agents for parallel work (researcher, reviewer, test_writer)
+- **Session Persistence**: Save and resume agent sessions
+- **Error Recovery**: Smart error detection with fix suggestions and spiral prevention
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/sciagent-ai/sciagent-1.git
+cd sciagent-1
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set your API key
+export ANTHROPIC_API_KEY="your-key"
+# or
+export OPENAI_API_KEY="your-key"
+
+# Optional: Brave Search API for better web search (falls back to DuckDuckGo)
+export BRAVE_SEARCH_API_KEY="your-brave-api-key"
+```
+
+Get a free Brave Search API key at https://brave.com/search/api/
+
+## Quick Start
+
+### Command Line
+
+```bash
+# Run a single task
+python main.py --project-dir ~/my-project "Create a Python script that fetches weather data"
+
+# Interactive mode
+python main.py --project-dir ~/my-project --interactive
+
+# Use a different model
+python main.py --model openai/gpt-4o "Analyze this code"
+
+# Enable sub-agents for complex tasks
+python main.py --subagents "Research this codebase and write tests"
+
+# Resume a previous session
+python main.py --resume <session-id>
+
+# List saved sessions
+python main.py --list-sessions
+```
+
+### Python API
+
+```python
+from agent import create_agent, run_task
+
+# One-shot task execution
+result = run_task("Create a hello world script")
+
+# Create and configure an agent
+agent = create_agent(
+    model="anthropic/claude-sonnet-4-20250514",
+    working_dir="./my-project"
+)
+result = agent.run("Analyze this codebase")
+
+# Interactive session
+agent = create_agent()
+agent.run_interactive()
+```
+
+### With Sub-Agents
+
+```python
+from subagent import create_agent_with_subagents
+
+agent = create_agent_with_subagents(
+    model="anthropic/claude-sonnet-4-20250514",
+    working_dir="./my-project"
+)
+result = agent.run("Research best practices and write tests for this module")
+```
+
+## Configuration
+
+### CLI Arguments
+
+| Argument | Description | Default |
+|----------|-------------|---------|
+| `task` | Task to execute | - |
+| `-i, --interactive` | Run in REPL mode | False |
+| `-m, --model` | LLM model to use | `anthropic/claude-sonnet-4-20250514` |
+| `-p, --project-dir` | Working directory for generated code | Current directory |
+| `-t, --load-tools` | Load custom tools from Python module | - |
+| `-s, --subagents` | Enable sub-agent spawning | False |
+| `--resume` | Resume a previous session | - |
+| `--max-iterations` | Maximum agent loop iterations | 30 |
+| `--temperature` | LLM temperature | 0.0 |
+| `-v, --verbose` | Verbose output | True |
+| `-q, --quiet` | Minimal output | False |
+
+### Supported Models
+
+Via LiteLLM, SciAgent supports:
+
+- **Anthropic**: `anthropic/claude-sonnet-4-20250514`, `anthropic/claude-opus-4-20250514`
+- **OpenAI**: `openai/gpt-4o`, `openai/gpt-4-turbo`
+- **Google**: `google/gemini-pro`
+- **Local**: `ollama/llama3`, `ollama/codellama`
+- **Azure**: `azure/gpt-4`
+
+## Built-in Tools
+
+| Tool | Description |
+|------|-------------|
+| `bash` | Execute shell commands with smart timeouts |
+| `view` | Read files and list directories |
+| `write_file` | Create or overwrite files |
+| `str_replace` | Edit files with string replacement |
+| `todo` | Manage task list with dependencies |
+| `web` | Search the web and fetch URLs |
+| `search` | Glob and grep for files and content |
+
+## Custom Tools
+
+Create custom tools by subclassing `BaseTool` or using the `@tool` decorator:
+
+```python
+# my_tools.py
+from tools import BaseTool, ToolResult, tool
+
+class MyCustomTool(BaseTool):
+    name = "my_tool"
+    description = "Does something useful"
+    parameters = {
+        "type": "object",
+        "properties": {
+            "input": {"type": "string", "description": "Input value"}
+        },
+        "required": ["input"]
+    }
+
+    def execute(self, input: str) -> ToolResult:
+        result = f"Processed: {input}"
+        return ToolResult(success=True, output=result)
+
+# Or use the decorator
+@tool(name="simple_tool", description="A simple tool")
+def simple_tool(value: str) -> str:
+    return f"Got: {value}"
+
+# Register tools
+def register_tools(registry):
+    registry.register(MyCustomTool())
+    registry.register(simple_tool)
+```
+
+Load custom tools:
+
+```bash
+python main.py --load-tools ./my_tools.py "Use my custom tool"
+```
+
+## Project Structure
+
+```
+sciagent-1/
+├── main.py              # CLI entry point
+├── agent.py             # Core agent loop
+├── llm.py               # LiteLLM wrapper
+├── tools.py             # Tool system base classes
+├── state.py             # State management & todos
+├── subagent.py          # Sub-agent orchestration
+├── orchestrator.py      # Task dependency management
+├── display.py           # Terminal output formatting
+├── tools/
+│   ├── atomic/          # Core atomic tools
+│   └── domain/          # Domain-specific tools
+├── prompts/             # System prompts
+├── tests/               # Test suite
+└── requirements.txt
+```
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
