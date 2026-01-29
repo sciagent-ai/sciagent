@@ -5,6 +5,8 @@
 # 1. Check local Docker images
 # 2. Pull from GHCR (ghcr.io/sciagent-ai/{name}:latest)
 # 3. Build from Dockerfile (services/{name}/Dockerfile)
+#
+# Services sourced from: https://github.com/sciagent-ai/scienv
 
 defaults:
   organization: sciagent-ai
@@ -12,6 +14,150 @@ defaults:
   tag: latest
 
 services:
+  # =============================================================================
+  # Phase 1: Foundation Services
+  # =============================================================================
+
+  scipy-base:
+    description: "Scientific Python foundation - NumPy, SciPy, Matplotlib, Pandas"
+    image: ghcr.io/sciagent-ai/scipy-base
+    dockerfile: services/scipy-base/Dockerfile
+    runtime: python3
+    workdir: /workspace
+    capabilities:
+      - "Numerical computing (numpy)"
+      - "Scientific algorithms (scipy)"
+      - "Data visualization (matplotlib)"
+      - "Data analysis (pandas)"
+      - "Unit conversions (pint)"
+    example: |
+      import numpy as np
+      from scipy import optimize, integrate, linalg
+      import matplotlib.pyplot as plt
+      import pandas as pd
+
+      # Solve equation
+      result = optimize.root_scalar(lambda x: x**2 - 2, bracket=[1, 2])
+      print(f"sqrt(2) = {result.root}")
+
+      # Integrate function
+      integral, _ = integrate.quad(lambda x: np.sin(x), 0, np.pi)
+      print(f"∫sin(x)dx from 0 to π = {integral}")
+
+  sympy:
+    description: "SymPy - Symbolic mathematics for algebraic manipulation, calculus, and equation solving"
+    image: ghcr.io/sciagent-ai/sympy
+    dockerfile: services/sympy/Dockerfile
+    runtime: python3
+    workdir: /workspace
+    capabilities:
+      - "Symbolic algebra and simplification"
+      - "Calculus (differentiation, integration, limits)"
+      - "Equation solving (algebraic, differential)"
+      - "Linear algebra (matrices, eigenvalues)"
+      - "LaTeX output for mathematical expressions"
+      - "Code generation (C, Fortran, Python)"
+    example: |
+      from sympy import symbols, solve, diff, integrate, simplify, Matrix, latex, sin, exp
+
+      # Define symbols
+      x, y = symbols('x y')
+
+      # Solve equation
+      solution = solve(x**2 - 2*x - 3, x)
+      print(f"x^2 - 2x - 3 = 0 → x = {solution}")
+
+      # Differentiate
+      f = x**3 * exp(-x)
+      df = diff(f, x)
+      print(f"d/dx[x³e^(-x)] = {df}")
+
+      # Integrate
+      integral = integrate(sin(x)**2, x)
+      print(f"∫sin²(x)dx = {integral}")
+
+      # Matrix operations
+      M = Matrix([[1, 2], [3, 4]])
+      print(f"Eigenvalues: {M.eigenvals()}")
+
+  rdkit:
+    description: "RDKit - Cheminformatics toolkit for molecular manipulation and analysis"
+    image: ghcr.io/sciagent-ai/rdkit
+    dockerfile: services/rdkit/Dockerfile
+    runtime: python3
+    workdir: /workspace
+    capabilities:
+      - "Molecular structure parsing and manipulation (SMILES, SDF, MOL)"
+      - "Molecular fingerprint generation (Morgan, MACCS, etc.)"
+      - "Molecular descriptor calculation"
+      - "Substructure and similarity searching"
+      - "2D/3D coordinate generation"
+      - "Reaction handling and transformations"
+    example: |
+      from rdkit import Chem
+      from rdkit.Chem import AllChem, Descriptors, Draw
+
+      # Parse SMILES
+      mol = Chem.MolFromSmiles('CCO')  # Ethanol
+      print(f"Molecular formula: C{mol.GetNumAtoms()}...")
+
+      # Calculate descriptors
+      mw = Descriptors.MolWt(mol)
+      logp = Descriptors.MolLogP(mol)
+      print(f"MW: {mw:.2f}, LogP: {logp:.2f}")
+
+      # Generate fingerprint
+      fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=1024)
+      print(f"Morgan fingerprint: {fp.GetNumOnBits()} bits set")
+
+      # Generate 3D coordinates
+      AllChem.EmbedMolecule(mol)
+      AllChem.MMFFOptimizeMolecule(mol)
+
+  cvxpy:
+    description: "CVXPY - Convex optimization modeling language for Python"
+    image: ghcr.io/sciagent-ai/cvxpy
+    dockerfile: services/cvxpy/Dockerfile
+    runtime: python3
+    workdir: /workspace
+    capabilities:
+      - "Convex optimization problem modeling"
+      - "Linear and quadratic programming"
+      - "Semidefinite and conic programming"
+      - "Portfolio optimization"
+      - "Signal processing and control"
+      - "Multiple solver backends (OSQP, ECOS, SCS, Clarabel)"
+    example: |
+      import cvxpy as cp
+      import numpy as np
+
+      # Portfolio optimization example
+      n = 5  # number of assets
+      np.random.seed(1)
+      mu = np.random.randn(n)  # expected returns
+      Sigma = np.random.randn(n, n)
+      Sigma = Sigma @ Sigma.T / n  # covariance matrix
+
+      # Define optimization variables
+      w = cp.Variable(n)
+
+      # Define objective: maximize return - risk
+      gamma = 0.5  # risk aversion
+      objective = cp.Maximize(mu @ w - gamma * cp.quad_form(w, Sigma))
+
+      # Define constraints
+      constraints = [cp.sum(w) == 1, w >= 0]
+
+      # Solve
+      prob = cp.Problem(objective, constraints)
+      prob.solve()
+      print(f"Optimal weights: {w.value}")
+      print(f"Expected return: {mu @ w.value:.4f}")
+
+  # =============================================================================
+  # Phase 2: Simulation Services
+  # =============================================================================
+
   rcwa:
     description: "RCWA/S4 - Rigorous Coupled Wave Analysis for electromagnetic simulations"
     image: ghcr.io/sciagent-ai/s4-rcwa
@@ -93,6 +239,38 @@ services:
       L = f*v*dx
       u = Function(V)
       solve(a == L, u)
+
+  ngspice:
+    description: "NGSpice - Open-source SPICE circuit simulator with PySpice bindings"
+    image: ghcr.io/sciagent-ai/ngspice
+    dockerfile: services/ngspice/Dockerfile
+    runtime: python3
+    workdir: /workspace
+    capabilities:
+      - "Analog and digital circuit simulation"
+      - "Transient, AC, and DC analysis"
+      - "SPICE netlist execution"
+      - "Python integration via PySpice"
+      - "Device modeling (BJT, MOSFET, diodes)"
+    example: |
+      from PySpice.Spice.NgSpice.Shared import NgSpiceShared
+      from PySpice.Spice.Parser import SpiceParser
+      from PySpice.Unit import *
+
+      # Simple RC circuit analysis
+      from PySpice.Probe.Plot import plot
+      from PySpice.Spice.Library import SpiceLibrary
+
+      import PySpice.Logging.Logging as Logging
+      logger = Logging.setup_logging()
+
+      from PySpice.Spice.NgSpice.Shared import NgSpiceShared
+      ngspice = NgSpiceShared.new_instance()
+      print("NGSpice ready for circuit simulation")
+
+  # =============================================================================
+  # Commercial Services (require license)
+  # =============================================================================
 
   lumerical:
     description: "Lumerical FDTD - Commercial photonics simulation (requires license)"
