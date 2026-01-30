@@ -9,7 +9,18 @@ from dataclasses import dataclass, field
 try:
     import litellm
     from litellm import completion
+    from litellm.caching import Cache
     LITELLM_AVAILABLE = True
+
+    # Initialize LiteLLM's built-in response caching (cross-provider)
+    # This caches entire LLM responses based on input hash
+    # Options: "local" (in-memory), "redis", "disk"
+    litellm.cache = Cache(
+        type="local",           # In-memory cache (use "redis" or "disk" for persistence)
+        ttl=3600,               # Cache TTL in seconds (1 hour)
+    )
+    litellm.enable_cache = True
+
 except ImportError:
     LITELLM_AVAILABLE = False
     print("Warning: litellm not installed. Run: pip install litellm")
@@ -65,17 +76,33 @@ class ToolCall:
         )
 
 
-@dataclass 
+@dataclass
 class LLMResponse:
     """Structured response from LLM"""
     content: str
     tool_calls: List[ToolCall] = field(default_factory=list)
     finish_reason: str = "stop"
     usage: Dict[str, int] = field(default_factory=dict)
-    
+    cache_info: Dict[str, Any] = field(default_factory=dict)  # Cache metrics
+
     @property
     def has_tool_calls(self) -> bool:
         return len(self.tool_calls) > 0
+
+    @property
+    def cache_hit(self) -> bool:
+        """Check if this response used cached tokens (Anthropic prompt caching)"""
+        return self.cache_info.get("cache_read_input_tokens", 0) > 0
+
+    @property
+    def tokens_cached(self) -> int:
+        """Number of tokens read from cache"""
+        return self.cache_info.get("cache_read_input_tokens", 0)
+
+    @property
+    def tokens_written_to_cache(self) -> int:
+        """Number of tokens written to cache for future use"""
+        return self.cache_info.get("cache_creation_input_tokens", 0)
 
 
 class LLMClient:
@@ -116,6 +143,66 @@ class LLMClient:
         if LITELLM_AVAILABLE:
             litellm.drop_params = True  # Ignore unsupported params
             
+    def _is_anthropic_model(self) -> bool:
+        """Check if current model is an Anthropic model"""
+        model_lower = self.model.lower()
+        return "anthropic" in model_lower or "claude" in model_lower
+
+    def _format_messages_with_prompt_caching(self, messages: List[Dict]) -> List[Dict]:
+        """
+        Format messages for Anthropic prompt caching.
+
+        Adds cache_control to system messages and long user messages to enable
+        Anthropic's prompt caching feature. This can reduce costs by ~90% on
+        cached tokens and improve response latency.
+
+        Only applies to Anthropic models.
+        """
+        if not self._is_anthropic_model():
+            return messages
+
+        formatted = []
+        for msg in messages:
+            msg_copy = msg.copy()
+
+            # Add cache_control to system messages (typically long, static prompts)
+            if msg_copy["role"] == "system":
+                content = msg_copy["content"]
+                # Convert string content to structured format with cache_control
+                if isinstance(content, str):
+                    msg_copy["content"] = [
+                        {
+                            "type": "text",
+                            "text": content,
+                            "cache_control": {"type": "ephemeral"}
+                        }
+                    ]
+                elif isinstance(content, list):
+                    # Already structured, add cache_control to last block
+                    for i, block in enumerate(content):
+                        if isinstance(block, dict) and block.get("type") == "text":
+                            # Add cache_control to the last text block
+                            if i == len(content) - 1:
+                                block["cache_control"] = {"type": "ephemeral"}
+                    msg_copy["content"] = content
+
+            # Optionally cache long user messages (e.g., large code files, documents)
+            elif msg_copy["role"] == "user":
+                content = msg_copy["content"]
+                # Cache user messages over 2000 chars (significant context)
+                if isinstance(content, str) and len(content) > 2000:
+                    msg_copy["content"] = [
+                        {
+                            "type": "text",
+                            "text": content,
+                            "cache_control": {"type": "ephemeral"}
+                        }
+                    ]
+
+            formatted.append(msg_copy)
+
+        return formatted
+
     def _format_tools(self, tools: List[Dict]) -> List[Dict]:
         """Format tools for the LLM API"""
         formatted = []
@@ -150,10 +237,13 @@ class LLMClient:
         """
         if not LITELLM_AVAILABLE:
             raise RuntimeError("litellm not installed")
-        
+
         # Convert messages to dicts
         msg_dicts = [m.to_dict() for m in messages]
-        
+
+        # Apply Anthropic prompt caching if applicable
+        msg_dicts = self._format_messages_with_prompt_caching(msg_dicts)
+
         # Prepare kwargs
         call_kwargs = {
             "model": self.model,
@@ -184,14 +274,32 @@ class LLMClient:
             for tc in message.tool_calls:
                 tool_calls.append(ToolCall.from_response(tc.model_dump()))
         
+        # Extract usage info
+        usage = {
+            "prompt_tokens": response.usage.prompt_tokens if response.usage else 0,
+            "completion_tokens": response.usage.completion_tokens if response.usage else 0,
+        }
+
+        # Extract Anthropic prompt caching metrics if available
+        cache_info = {}
+        if response.usage:
+            # Anthropic returns these fields for prompt caching
+            if hasattr(response.usage, "cache_read_input_tokens"):
+                cache_info["cache_read_input_tokens"] = response.usage.cache_read_input_tokens or 0
+            if hasattr(response.usage, "cache_creation_input_tokens"):
+                cache_info["cache_creation_input_tokens"] = response.usage.cache_creation_input_tokens or 0
+            # Also check _hidden_params for litellm's cache info
+            if hasattr(response, "_hidden_params"):
+                hidden = response._hidden_params or {}
+                if hidden.get("cache_hit"):
+                    cache_info["litellm_cache_hit"] = True
+
         return LLMResponse(
             content=message.content or "",
             tool_calls=tool_calls,
             finish_reason=choice.finish_reason or "stop",
-            usage={
-                "prompt_tokens": response.usage.prompt_tokens if response.usage else 0,
-                "completion_tokens": response.usage.completion_tokens if response.usage else 0,
-            }
+            usage=usage,
+            cache_info=cache_info
         )
     
     def chat_stream(
@@ -202,14 +310,17 @@ class LLMClient:
     ) -> Generator[str, None, LLMResponse]:
         """
         Stream response from LLM
-        
+
         Yields content chunks, returns final LLMResponse
         """
         if not LITELLM_AVAILABLE:
             raise RuntimeError("litellm not installed")
-            
+
         msg_dicts = [m.to_dict() for m in messages]
-        
+
+        # Apply Anthropic prompt caching if applicable
+        msg_dicts = self._format_messages_with_prompt_caching(msg_dicts)
+
         call_kwargs = {
             "model": self.model,
             "messages": msg_dicts,
@@ -218,21 +329,21 @@ class LLMClient:
             "stream": True,
             **kwargs
         }
-        
+
         if tools:
             call_kwargs["tools"] = self._format_tools(tools)
-            
+
         response = completion(**call_kwargs)
-        
+
         full_content = ""
         tool_calls = []
-        
+
         for chunk in response:
             if chunk.choices[0].delta.content:
                 content = chunk.choices[0].delta.content
                 full_content += content
                 yield content
-                
+
         return LLMResponse(
             content=full_content,
             tool_calls=tool_calls,
@@ -255,3 +366,61 @@ def ask(
     messages.append(Message(role="user", content=prompt))
     response = client.chat(messages)
     return response.content
+
+
+def configure_cache(
+    cache_type: str = "local",
+    ttl: int = 3600,
+    redis_host: Optional[str] = None,
+    redis_port: int = 6379,
+    disk_cache_dir: Optional[str] = None,
+    enabled: bool = True
+) -> None:
+    """
+    Configure LiteLLM's response caching at runtime.
+
+    Args:
+        cache_type: "local" (in-memory), "redis", or "disk"
+        ttl: Cache time-to-live in seconds (default: 1 hour)
+        redis_host: Redis server host (required if cache_type="redis")
+        redis_port: Redis server port (default: 6379)
+        disk_cache_dir: Directory for disk cache (required if cache_type="disk")
+        enabled: Whether to enable caching (default: True)
+
+    Examples:
+        # Use in-memory cache (default)
+        configure_cache(cache_type="local", ttl=3600)
+
+        # Use Redis for persistent caching
+        configure_cache(cache_type="redis", redis_host="localhost", ttl=7200)
+
+        # Use disk cache
+        configure_cache(cache_type="disk", disk_cache_dir="/tmp/llm_cache")
+
+        # Disable caching
+        configure_cache(enabled=False)
+    """
+    if not LITELLM_AVAILABLE:
+        print("Warning: litellm not installed, caching not available")
+        return
+
+    litellm.enable_cache = enabled
+
+    if not enabled:
+        litellm.cache = None
+        return
+
+    cache_kwargs = {"type": cache_type, "ttl": ttl}
+
+    if cache_type == "redis":
+        if not redis_host:
+            raise ValueError("redis_host required for Redis cache")
+        cache_kwargs["host"] = redis_host
+        cache_kwargs["port"] = redis_port
+
+    elif cache_type == "disk":
+        if not disk_cache_dir:
+            raise ValueError("disk_cache_dir required for disk cache")
+        cache_kwargs["disk_cache_dir"] = disk_cache_dir
+
+    litellm.cache = Cache(**cache_kwargs)
