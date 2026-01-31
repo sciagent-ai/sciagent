@@ -1,3 +1,9 @@
+---
+layout: default
+title: Configuration
+nav_order: 3
+---
+
 # Configuration
 
 This document covers all configuration options for SciAgent.

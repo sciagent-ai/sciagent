@@ -1,3 +1,9 @@
+---
+layout: default
+title: Sub Agents
+nav_order: 6
+---
+
 # Sub-Agents
 
 Sub-agents are specialized agent instances that can be spawned by the main agent to handle specific types of work in parallel.

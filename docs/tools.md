@@ -1,3 +1,9 @@
+---
+layout: default
+title: Tools
+nav_order: 4
+---
+
 # Tools Reference
 
 SciAgent uses tools to interact with the filesystem, execute commands, and perform research. This document describes all built-in tools.

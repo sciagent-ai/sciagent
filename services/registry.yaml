@@ -5,8 +5,6 @@
 # 1. Check local Docker images
 # 2. Pull from GHCR (ghcr.io/sciagent-ai/{name}:latest)
 # 3. Build from Dockerfile (services/{name}/Dockerfile)
-#
-# Services sourced from: https://github.com/sciagent-ai/scienv
 
 defaults:
   organization: sciagent-ai
@@ -14,10 +12,6 @@ defaults:
   tag: latest
 
 services:
-  # =============================================================================
-  # Phase 1: Foundation Services
-  # =============================================================================
-
   scipy-base:
     description: "Scientific Python foundation - NumPy, SciPy, Matplotlib, Pandas"
     image: ghcr.io/sciagent-ai/scipy-base
@@ -43,6 +37,40 @@ services:
       # Integrate function
       integral, _ = integrate.quad(lambda x: np.sin(x), 0, np.pi)
       print(f"∫sin(x)dx from 0 to π = {integral}")
+
+  rdkit:
+    description: "RDKit - Cheminformatics toolkit for molecular manipulation and analysis"
+    image: ghcr.io/sciagent-ai/rdkit
+    dockerfile: services/rdkit/Dockerfile
+    runtime: python3
+    workdir: /workspace
+    capabilities:
+      - "Molecular structure parsing and manipulation (SMILES, SDF, MOL)"
+      - "Molecular fingerprint generation (Morgan, MACCS, etc.)"
+      - "Molecular descriptor calculation"
+      - "Substructure and similarity searching"
+      - "2D/3D coordinate generation"
+      - "Reaction handling and transformations"
+    example: |
+      from rdkit import Chem
+      from rdkit.Chem import AllChem, Descriptors, Draw
+
+      # Parse SMILES
+      mol = Chem.MolFromSmiles('CCO')  # Ethanol
+      print(f"Molecular formula: C{mol.GetNumAtoms()}...")
+
+      # Calculate descriptors
+      mw = Descriptors.MolWt(mol)
+      logp = Descriptors.MolLogP(mol)
+      print(f"MW: {mw:.2f}, LogP: {logp:.2f}")
+
+      # Generate fingerprint
+      fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=1024)
+      print(f"Morgan fingerprint: {fp.GetNumOnBits()} bits set")
+
+      # Generate 3D coordinates
+      AllChem.EmbedMolecule(mol)
+      AllChem.MMFFOptimizeMolecule(mol)
 
   sympy:
     description: "SymPy - Symbolic mathematics for algebraic manipulation, calculus, and equation solving"
@@ -79,40 +107,6 @@ services:
       # Matrix operations
       M = Matrix([[1, 2], [3, 4]])
       print(f"Eigenvalues: {M.eigenvals()}")
-
-  rdkit:
-    description: "RDKit - Cheminformatics toolkit for molecular manipulation and analysis"
-    image: ghcr.io/sciagent-ai/rdkit
-    dockerfile: services/rdkit/Dockerfile
-    runtime: python3
-    workdir: /workspace
-    capabilities:
-      - "Molecular structure parsing and manipulation (SMILES, SDF, MOL)"
-      - "Molecular fingerprint generation (Morgan, MACCS, etc.)"
-      - "Molecular descriptor calculation"
-      - "Substructure and similarity searching"
-      - "2D/3D coordinate generation"
-      - "Reaction handling and transformations"
-    example: |
-      from rdkit import Chem
-      from rdkit.Chem import AllChem, Descriptors, Draw
-
-      # Parse SMILES
-      mol = Chem.MolFromSmiles('CCO')  # Ethanol
-      print(f"Molecular formula: C{mol.GetNumAtoms()}...")
-
-      # Calculate descriptors
-      mw = Descriptors.MolWt(mol)
-      logp = Descriptors.MolLogP(mol)
-      print(f"MW: {mw:.2f}, LogP: {logp:.2f}")
-
-      # Generate fingerprint
-      fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=1024)
-      print(f"Morgan fingerprint: {fp.GetNumOnBits()} bits set")
-
-      # Generate 3D coordinates
-      AllChem.EmbedMolecule(mol)
-      AllChem.MMFFOptimizeMolecule(mol)
 
   cvxpy:
     description: "CVXPY - Convex optimization modeling language for Python"
@@ -153,10 +147,6 @@ services:
       prob.solve()
       print(f"Optimal weights: {w.value}")
       print(f"Expected return: {mu @ w.value:.4f}")
-
-  # =============================================================================
-  # Phase 2: Simulation Services
-  # =============================================================================
 
   rcwa:
     description: "RCWA/S4 - Rigorous Coupled Wave Analysis for electromagnetic simulations"
@@ -268,25 +258,141 @@ services:
       ngspice = NgSpiceShared.new_instance()
       print("NGSpice ready for circuit simulation")
 
-  # =============================================================================
-  # Commercial Services (require license)
-  # =============================================================================
-
-  lumerical:
-    description: "Lumerical FDTD - Commercial photonics simulation (requires license)"
-    image: ghcr.io/sciagent-ai/lumerical
-    dockerfile: services/lumerical/Dockerfile
+  ase:
+    description: "ASE - Atomic Simulation Environment for atomistic simulations and materials science"
+    image: ghcr.io/sciagent-ai/ase
+    dockerfile: ase/Dockerfile
     runtime: python3
     workdir: /workspace
-    requires_license: true
     capabilities:
-      - "Photonic device simulation"
-      - "Silicon photonics"
-      - "Plasmonics"
-      - "Metamaterials"
+      - "Atomic structure creation and manipulation"
+      - "Molecular dynamics simulations"
+      - "Geometry optimization"
+      - "Electronic structure calculator interfaces (VASP, GPAW, etc.)"
+      - "Equation of state calculations"
+      - "Band structure and DOS analysis"
+      - "Trajectory analysis and visualization"
     example: |
-      import lumapi
-      fdtd = lumapi.FDTD()
-      fdtd.addfdtd(dimension="2D", x=0, y=0, x_span=10e-6, y_span=10e-6)
-      fdtd.addring(x=0, y=0, inner_radius=1e-6, outer_radius=2e-6)
-      fdtd.run()
+      from ase import Atoms
+      from ase.build import bulk, molecule, surface
+      from ase.visualize import view
+      from ase.io import write, read
+
+      # Create a water molecule
+      water = molecule('H2O')
+      print(f"Water: {water.get_chemical_formula()}")
+      print(f"Positions:\n{water.get_positions()}")
+
+      # Create bulk silicon
+      si = bulk('Si', 'diamond', a=5.43)
+      print(f"\nSilicon unit cell: {len(si)} atoms")
+
+      # Create a surface
+      slab = surface('Al', (1, 1, 1), layers=4, vacuum=10.0)
+      print(f"\nAl(111) surface: {len(slab)} atoms")
+
+      # Calculate distances
+      from ase.geometry import get_distances
+      d = water.get_distance(0, 1)
+      print(f"\nO-H bond length: {d:.3f} Angstrom")
+
+  gmsh:
+    description: "Gmsh - 3D finite element mesh generator with Python API"
+    image: ghcr.io/sciagent-ai/gmsh
+    dockerfile: services/gmsh/Dockerfile
+    runtime: python3
+    workdir: /workspace
+    capabilities:
+      - "2D and 3D mesh generation"
+      - "CAD geometry creation and manipulation"
+      - "Built-in CAD engine and OpenCASCADE integration"
+      - "Mesh import/export (MSH, STL, STEP, IGES, etc.)"
+      - "Mesh optimization and refinement"
+      - "Post-processing and visualization"
+    example: |
+      import gmsh
+
+      # Initialize gmsh
+      gmsh.initialize()
+      gmsh.model.add("box")
+
+      # Create a simple box geometry
+      box = gmsh.model.occ.addBox(0, 0, 0, 1, 1, 1)
+      gmsh.model.occ.synchronize()
+
+      # Set mesh size
+      gmsh.option.setNumber("Mesh.CharacteristicLengthMax", 0.1)
+
+      # Generate 3D mesh
+      gmsh.model.mesh.generate(3)
+
+      # Get mesh statistics
+      nodes = gmsh.model.mesh.getNodes()
+      elements = gmsh.model.mesh.getElements()
+      print(f"Generated mesh: {len(nodes[0])} nodes")
+
+      # Save mesh
+      gmsh.write("box.msh")
+      gmsh.finalize()
+
+  gromacs:
+    description: "GROMACS - Molecular dynamics simulation for biomolecular systems"
+    image: ghcr.io/sciagent-ai/gromacs
+    dockerfile: services/gromacs/Dockerfile
+    runtime: bash
+    workdir: /workspace
+    capabilities:
+      - "Molecular dynamics simulations"
+      - "Energy minimization"
+      - "Free energy calculations"
+      - "Protein and membrane simulations"
+      - "Trajectory analysis with MDAnalysis"
+      - "Force field support (AMBER, CHARMM, OPLS, etc.)"
+    example: |
+      # GROMACS workflow example
+      # 1. Generate topology from PDB
+      gmx pdb2gmx -f protein.pdb -o protein.gro -water spce
+
+      # 2. Create simulation box
+      gmx editconf -f protein.gro -o box.gro -c -d 1.0 -bt cubic
+
+      # 3. Solvate the system
+      gmx solvate -cp box.gro -cs spc216.gro -o solvated.gro -p topol.top
+
+      # 4. Energy minimization
+      gmx grompp -f minim.mdp -c solvated.gro -p topol.top -o em.tpr
+      gmx mdrun -v -deffnm em
+
+      # 5. Run MD simulation
+      gmx grompp -f md.mdp -c em.gro -p topol.top -o md.tpr
+      gmx mdrun -v -deffnm md
+
+  elmer:
+    description: "Elmer FEM - Open-source multiphysics finite element solver"
+    image: ghcr.io/sciagent-ai/elmer
+    dockerfile: services/elmer/Dockerfile
+    runtime: bash
+    workdir: /workspace
+    capabilities:
+      - "Heat transfer and thermal analysis"
+      - "Structural mechanics and elasticity"
+      - "Fluid dynamics (Navier-Stokes)"
+      - "Electromagnetics (Maxwell equations)"
+      - "Acoustics and wave propagation"
+      - "Multiphysics coupled simulations"
+    example: |
+      # Elmer workflow example
+      # 1. Generate mesh with ElmerGrid (from Gmsh, Netgen, etc.)
+      ElmerGrid 14 2 mesh.msh
+
+      # 2. Create solver input file (case.sif) defining:
+      #    - Simulation parameters
+      #    - Boundary conditions
+      #    - Material properties
+      #    - Solver settings
+
+      # 3. Run the solver
+      ElmerSolver case.sif
+
+      # 4. Post-process results (VTU files) with ParaView
+

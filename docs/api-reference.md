@@ -1,3 +1,9 @@
+---
+layout: default
+title: API Reference
+nav_order: 5
+---
+
 # API Reference
 
 This document covers the Python API for using SciAgent programmatically.
